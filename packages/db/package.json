@@ -1,7 +1,13 @@
 {
-  "name": "db",
+  "name": "@repo/db",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema.ts",
+    "./client": "./src/client.ts"
+  },
   "scripts": {
     "generate": "pop run --env-file=.env -- npm drizzle-kit generate",
     "migrate": "op run --env-file=.env -- pnpm drizzle-kit migrate",
@@ -9,9 +15,14 @@
     "pull": "pop run --env-file=.env -- npm drizzle-kit pull",
     "check": "op run --env-file=.env -- pnpm drizzle-kit check",
     "up": "op run --env-file=.env -- pnpm drizzle-kit up",
-    "studio": "op run --env-file=.env -- pnpm drizzle-kit studio"
+    "studio": "op run --env-file=.env -- pnpm drizzle-kit studio",
+    "reset": "op run --env-file=.env -- tsx src/scripts/reset.ts",
+    "seed": "op run --env-file=.env -- tsx src/scripts/seed.ts",
+    "reset-seed": "pnpm reset && pnpm push && pnpm seed",
+    "apply-rls": "op run --env-file=.env -- tsx src/migrations/apply-rls.ts"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.7",
     "postgres": "^3.4.7",

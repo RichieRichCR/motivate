@@ -4,12 +4,12 @@
   "scripts": {
     "build": "turbo run build",
     "clean": "turbo run clean",
-    "dev": "op run --env-file=.env -- turbo run dev",
+    "dev": "turbo watch dev --continue",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "lint": "op run --env-file=.env -- turbo run lint",
-    "test": "op run --env-file=.env -- turbo run test",
-    "db:push": "op run --env-file=.env -- pnpm --filter db run push",
-    "db:studio": "op run --env-file=.env -- pnpm --filter db run studio",
+    "lint": "turbo run lint",
+    "test": "turbo run test --continue",
+    "db:push": "pnpm --filter db run push",
+    "db:studio": "pnpm --filter db run studio",
     "check-types": "turbo run check-types"
   },
   "devDependencies": {

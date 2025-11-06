@@ -1,0 +1,167 @@
+import { db } from '../client';
+import * as schema from '../schema';
+
+async function seed() {
+  console.log('🌱 Seeding database...');
+
+  try {
+    // 1. Create users
+    console.log('Creating users...');
+    const [user1] = await db
+      .insert(schema.users)
+      .values([
+        {
+          email: 'rich@richdeane.dev',
+          name: 'Rich Deane',
+        },
+      ])
+      .returning();
+
+    console.log(`✅ Created ${2} users`);
+
+    // 2. Create metric types
+    console.log('Creating metric types...');
+    const metricTypesData = [
+      {
+        name: 'weight',
+        unit: 'kg',
+        description: 'Body weight in kilograms',
+      },
+      {
+        name: 'steps',
+        unit: 'count',
+        description: 'Daily step count',
+      },
+    ];
+
+    const metricTypes = await db
+      .insert(schema.metricTypes)
+      .values(metricTypesData)
+      .returning();
+
+    console.log(`✅ Created ${metricTypes.length} metric types`);
+
+    // 3. Create measurements for the past 30 days
+    console.log('Creating measurements...');
+    const measurements = [];
+    const now = new Date();
+
+    // Helper to get random value in range
+    const random = (min: number, max: number) =>
+      Math.floor(Math.random() * (max - min + 1)) + min;
+
+    // Create measurements for each user
+    for (const user of [user1]) {
+      for (let day = 0; day < 30; day++) {
+        const date = new Date(now);
+        date.setDate(date.getDate() - day);
+
+        // Weight measurement
+        measurements.push({
+          userId: user.id,
+          metricTypeId: metricTypes[0].id, // weight
+          value: (70 + random(-5, 5) + Math.random()).toFixed(2),
+          measuredAt: date,
+          source: 'apple_health',
+        });
+
+        // Steps
+        measurements.push({
+          userId: user.id,
+          metricTypeId: metricTypes[1].id, // steps
+          value: random(5000, 15000).toString(),
+          measuredAt: date,
+          source: 'apple_health',
+        });
+      }
+    }
+
+    const insertedMeasurements = await db
+      .insert(schema.measurements)
+      .values(measurements)
+      .returning();
+
+    console.log(`✅ Created ${insertedMeasurements.length} measurements`);
+
+    // 4. Create goals
+    console.log('Creating goals...');
+    const today = new Date();
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 90); // 3 months from now
+
+    const goals = await db
+      .insert(schema.goals)
+      .values([
+        {
+          userId: user1.id,
+          metricTypeId: metricTypes[0].id, // weight
+          targetValue: '65.00',
+          startDate: today.toISOString().split('T')[0],
+          targetDate: futureDate.toISOString().split('T')[0],
+          achieved: false,
+        },
+        {
+          userId: user1.id,
+          metricTypeId: metricTypes[1].id, // steps
+          targetValue: '10000',
+          startDate: today.toISOString().split('T')[0],
+          targetDate: futureDate.toISOString().split('T')[0],
+          achieved: false,
+        },
+      ])
+      .returning();
+
+    console.log(`✅ Created ${goals.length} goals`);
+
+    // 5. Create milestones
+    console.log('Creating milestones...');
+    const milestoneDate = new Date();
+    milestoneDate.setDate(milestoneDate.getDate() - 15); // 15 days ago
+
+    const milestones = await db
+      .insert(schema.milestones)
+      .values([
+        {
+          userId: user1.id,
+          metricTypeId: metricTypes[0].id, // weight
+          title: 'Lost 2kg!',
+          description: 'Successfully lost 2 kilograms from starting weight',
+          achievedAt: milestoneDate,
+          measurementId: insertedMeasurements[0].id,
+        },
+        {
+          userId: user1.id,
+          metricTypeId: metricTypes[1].id, // steps
+          title: '10,000 steps milestone',
+          description: 'First day hitting 10,000 steps goal',
+          achievedAt: milestoneDate,
+          measurementId: insertedMeasurements[2].id,
+        },
+      ])
+      .returning();
+
+    console.log(`✅ Created ${milestones.length} milestones`);
+
+    console.log('\n🎉 Seeding completed successfully!');
+    console.log('\nSummary:');
+    console.log(`- Users: 2`);
+    console.log(`- Metric Types: ${metricTypes.length}`);
+    console.log(`- Measurements: ${insertedMeasurements.length}`);
+    console.log(`- Goals: ${goals.length}`);
+    console.log(`- Milestones: ${milestones.length}`);
+  } catch (error) {
+    console.error('❌ Error seeding database:', error);
+    throw error;
+  }
+}
+
+// Run the seed
+seed()
+  .then(() => {
+    console.log('✅ Seed script completed');
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error('❌ Seed script failed:', error);
+    process.exit(1);
+  });

@@ -2,23 +2,27 @@
   "name": "@repo/api-app",
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
+    "dev": "wrangler dev --local",
+    "dev:node": "tsx watch src/index.ts",
     "deploy": "wrangler deploy --minify",
+    "deploy:dev": "wrangler deploy --env dev --minify",
+    "deploy:staging": "wrangler deploy --env staging --minify",
+    "deploy:production": "wrangler deploy --env production --minify",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings"
   },
   "dependencies": {
-    "@repo/api": "workspace:*",
-    "@repo/logger": "workspace:*",
     "@hono/node-server": "^1.17.1",
     "@hono/swagger-ui": "^0.5.2",
     "@hono/zod-openapi": "^0.18.4",
     "@hono/zod-validator": "^0.7.4",
+    "@repo/api": "workspace:*",
+    "@repo/logger": "workspace:*",
+    "@supabase/supabase-js": "^2.80.0",
     "hono": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@repo/jest-presets": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "eslint": "catalog:",
     "prettier": "catalog:",

@@ -7,18 +7,30 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "dev": "echo 'Add dev script here'",
-    "build": "echo 'Add build script here'",
-    "test": "echo 'Add test script here'",
-    "lint": "echo 'Add lint script here'"
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "clean": "git clean -xdf .cache .next .turbo node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint --flag unstable_native_nodejs_ts_config",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@hono/zod-validator": "^0.7.2",
-    "hono": "catalog:",
+    "@hono/node-server": "^1.17.1",
+    "@hono/standard-validator": "^0.1.5",
+    "@hono/swagger-ui": "^0.5.2",
+    "@hono/zod-openapi": "^0.18.4",
+    "@hono/zod-validator": "^0.4.1",
+    "@repo/db": "workspace:*",
+    "hono": "^4.10.2",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "prettier": "catalog:",
+    "vitest": "^2.1.8",
+    "wrangler": "^4.4.0"
   }
 }

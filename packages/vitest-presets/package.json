@@ -1,0 +1,17 @@
+{
+  "name": "@repo/vitest-presets",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "files": [
+    "browser/vitest-preset.ts",
+    "node/vitest-preset.ts"
+  ],
+  "dependencies": {
+    "vitest": "^2.1.8"
+  },
+  "devDependencies": {
+    "@vitest/ui": "^2.1.8",
+    "jsdom": "^25.0.0"
+  }
+}

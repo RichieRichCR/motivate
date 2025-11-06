@@ -2,13 +2,35 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "api",
   "main": "src/index.ts",
-  "compatibility_date": "2025-11-06"
-  // "compatibility_flags": [
-  //   "nodejs_compat"
-  // ],
-  // "vars": {
-  //   "MY_VAR": "my-variable"
-  // },
+  "compatibility_date": "2025-10-11",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // Default environment (production)
+  "vars": {
+    "NODE_ENV": "production",
+  },
+
+  // Named environments
+  "env": {
+    "dev": {
+      "name": "api-dev",
+      "vars": {
+        "NODE_ENV": "development",
+      },
+    },
+    "staging": {
+      "name": "api-staging",
+      "vars": {
+        "NODE_ENV": "staging",
+      },
+    },
+    "production": {
+      "name": "api-production",
+      "vars": {
+        "NODE_ENV": "production",
+      },
+    },
+  },
   // "kv_namespaces": [
   //   {
   //     "binding": "MY_KV_NAMESPACE",
