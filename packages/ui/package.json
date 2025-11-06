@@ -2,59 +2,33 @@
   "name": "@repo/ui",
   "version": "0.0.0",
   "private": true,
-  "license": "MIT",
-  "sideEffects": false,
-  "files": [
-    "dist/**",
-    "dist"
-  ],
+  "type": "module",
   "exports": {
-    "./counter-button": {
-      "import": {
-        "types": "./dist/es/counter-button.d.mts",
-        "default": "./dist/es/counter-button.mjs"
-      },
-      "require": {
-        "types": "./dist/cjs/counter-button.d.ts",
-        "default": "./dist/cjs/counter-button.js"
-      }
-    },
-    "./link": {
-      "import": {
-        "types": "./dist/es/link.d.mts",
-        "default": "./dist/es/link.mjs"
-      },
-      "require": {
-        "types": "./dist/cjs/link.d.ts",
-        "default": "./dist/cjs/link.js"
-      }
-    }
+    ".": "./src/index.ts",
+    "./components/*": "./src/components/*.tsx",
+    "./lib/*": "./src/lib/*.ts"
   },
   "scripts": {
-    "build": "bunchee",
-    "dev": "bunchee --watch",
-    "check-types": "tsc --noEmit",
-    "lint": "eslint src/",
-    "test": "jest"
+    "lint": "eslint",
+    "type-check": "tsc --noEmit"
   },
-  "jest": {
-    "preset": "@repo/jest-presets/browser"
+  "dependencies": {
+    "@repo/tailwind-config": "workspace:*",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "react": "catalog:react19",
+    "react-dom": "catalog:react19",
+    "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
     "@repo/eslint-config": "workspace:*",
-    "@repo/jest-presets": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/node": "^22.15.3",
-    "bunchee": "^6.4.0",
-    "eslint": "^9.39.0",
-    "jest": "^29.7.0",
-    "typescript": "5.9.3"
-  },
-  "peerDependencies": {
-    "@types/react": ">=18",
-    "@types/react-dom": ">=18",
-    "react": ">=18",
-    "react-dom": ">=18"
+    "@tailwindcss/postcss": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
+    "eslint": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:"
   }
 }

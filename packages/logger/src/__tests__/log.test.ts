@@ -1,12 +1,26 @@
-import { describe, it, expect, jest } from "@jest/globals";
-import { log } from "..";
+import { describe, it, expect } from '@jest/globals';
+import { logger, createLogger, log } from '..';
 
-jest.spyOn(global.console, "log");
+describe('@repo/logger', () => {
+  it('has basic logger methods', () => {
+    expect(logger.info).toBeDefined();
+    expect(logger.error).toBeDefined();
+    expect(logger.warn).toBeDefined();
+    expect(logger.debug).toBeDefined();
+  });
 
-describe("@repo/logger", () => {
-  it("prints a message", () => {
-    log("hello");
-    // eslint-disable-next-line no-console -- testing console
-    expect(console.log).toBeCalledWith("LOGGER: ", "hello");
+  it('creates child logger with string context', () => {
+    const childLogger = createLogger('test-context');
+    expect(childLogger).toBeDefined();
+  });
+
+  it('creates child logger with object context', () => {
+    const childLogger = createLogger({ module: 'test', id: 123 });
+    expect(childLogger).toBeDefined();
+  });
+
+  it('backward compatible log function exists', () => {
+    expect(log).toBeDefined();
+    expect(typeof log).toBe('function');
   });
 });

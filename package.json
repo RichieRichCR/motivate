@@ -1,20 +1,22 @@
 {
-  "name": "kitchen-sink",
+  "name": "motivate",
   "private": true,
   "scripts": {
     "build": "turbo run build",
     "clean": "turbo run clean",
-    "dev": "turbo run dev",
+    "dev": "op run --env-file=.env -- turbo run dev",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "lint": "turbo run lint",
-    "test": "turbo run test",
+    "lint": "op run --env-file=.env -- turbo run lint",
+    "test": "op run --env-file=.env -- turbo run test",
+    "db:push": "op run --env-file=.env -- pnpm --filter db run push",
+    "db:studio": "op run --env-file=.env -- pnpm --filter db run studio",
     "check-types": "turbo run check-types"
   },
   "devDependencies": {
     "prettier": "^3.6.0",
     "turbo": "^2.6.0"
   },
-  "packageManager": "pnpm@8.15.6",
+  "packageManager": "pnpm@10.15.1",
   "engines": {
     "node": ">=18"
   }

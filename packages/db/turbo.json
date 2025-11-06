@@ -1,0 +1,44 @@
+{
+  "extends": [
+    "//"
+  ],
+  "tasks": {
+    "generate": {
+      "env": [
+        "POSTGRES_URL"
+      ]
+    },
+    "migrate": {
+      "env": [
+        "POSTGRES_URL"
+      ]
+    },
+    "push": {
+      "env": [
+        "POSTGRES_URL"
+      ]
+    },
+    "pull": {
+      "env": [
+        "POSTGRES_URL"
+      ]
+    },
+    "check": {
+      "env": [
+        "POSTGRES_URL"
+      ]
+    },
+    "up": {
+      "env": [
+        "POSTGRES_URL"
+      ]
+    },
+    "studio": {
+      "env": [
+        "POSTGRES_URL"
+      ],
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

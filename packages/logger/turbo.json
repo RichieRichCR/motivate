@@ -4,8 +4,24 @@
   ],
   "tasks": {
     "build": {
+      "env": [
+        "NODE_ENV",
+        "LOG_LEVEL"
+      ],
       "outputs": [
         "dist/**"
+      ]
+    },
+    "dev": {
+      "env": [
+        "NODE_ENV",
+        "LOG_LEVEL"
+      ]
+    },
+    "test": {
+      "env": [
+        "NODE_ENV",
+        "LOG_LEVEL"
       ]
     }
   }
