@@ -46,6 +46,24 @@
       ],
       "cache": false,
       "persistent": true
+    },
+    "build:styles": {
+      "outputs": [
+        "dist/**"
+      ],
+      "env": [
+        "API_KEY",
+        "USER_ID"
+      ]
+    },
+    "build:components": {
+      "outputs": [
+        "dist/**"
+      ],
+      "env": [
+        "API_KEY",
+        "USER_ID"
+      ]
     }
   }
 }
