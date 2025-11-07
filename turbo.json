@@ -16,6 +16,10 @@
         "dist/**",
         ".next/**",
         "!.next/cache/**"
+      ],
+      "env": [
+        "API_KEY",
+        "USER_ID"
       ]
     },
     "test": {
