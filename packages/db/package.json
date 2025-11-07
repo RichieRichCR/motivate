@@ -9,16 +9,13 @@
     "./client": "./src/client.ts"
   },
   "scripts": {
-    "generate": "pop run --env-file=.env -- npm drizzle-kit generate",
+    "generate": "op run --env-file=.env -- pnpm drizzle-kit generate",
     "migrate": "op run --env-file=.env -- pnpm drizzle-kit migrate",
     "push": "op run --env-file=.env -- pnpm drizzle-kit push",
-    "pull": "pop run --env-file=.env -- npm drizzle-kit pull",
+    "pull": "op run --env-file=.env -- pnpm drizzle-kit pull",
     "check": "op run --env-file=.env -- pnpm drizzle-kit check",
     "up": "op run --env-file=.env -- pnpm drizzle-kit up",
     "studio": "op run --env-file=.env -- pnpm drizzle-kit studio",
-    "reset": "op run --env-file=.env -- tsx src/scripts/reset.ts",
-    "seed": "op run --env-file=.env -- tsx src/scripts/seed.ts",
-    "reset-seed": "pnpm reset && pnpm push && pnpm seed",
     "apply-rls": "op run --env-file=.env -- tsx src/migrations/apply-rls.ts"
   },
   "dependencies": {

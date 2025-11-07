@@ -1,2 +1,2 @@
-/* Import shared Tailwind config */
-@import "@repo/tailwind-config/globals.css";
+@import 'tailwindcss';
+@import "@repo/tailwind-config";

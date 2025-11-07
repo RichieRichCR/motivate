@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
-    "./globals.css": "./globals.css"
+    ".": "./src/shared-styles.css",
+    "./postcss": "./src/postcss.config.ts"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "catalog:",

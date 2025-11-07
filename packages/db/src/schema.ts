@@ -11,8 +11,12 @@ import {
   date,
   unique,
   index,
+  pgEnum,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+
+// Enums
+export const goalTypeEnum = pgEnum('goal_type', ['daily', 'long_term']);
 
 export const users = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -74,29 +78,16 @@ export const goals = pgTable('goals', {
   metricTypeId: integer('metric_type_id')
     .notNull()
     .references(() => metricTypes.id),
+  type: goalTypeEnum('type').notNull(),
   targetValue: numeric('target_value', { precision: 10, scale: 2 }).notNull(),
   startDate: date('start_date').notNull(),
-  targetDate: date('target_date'),
+  targetDate: date('target_date'), // null for daily goals, set for long-term goals
+  active: boolean('active').default(true).notNull(),
   achieved: boolean('achieved').default(false).notNull(),
-  achievedAt: timestamp('achieved_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()
     .notNull(),
-});
-
-export const milestones = pgTable('milestones', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  userId: uuid('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  metricTypeId: integer('metric_type_id')
-    .notNull()
-    .references(() => metricTypes.id),
-  title: varchar('title', { length: 255 }).notNull(),
-  description: text('description'),
-  achievedAt: timestamp('achieved_at', { withTimezone: true }).notNull(),
-  measurementId: uuid('measurement_id').references(() => measurements.id),
-  createdAt: timestamp('created_at', { withTimezone: true })
+  updatedAt: timestamp('updated_at', { withTimezone: true })
     .defaultNow()
     .notNull(),
 });
@@ -104,29 +95,23 @@ export const milestones = pgTable('milestones', {
 export const usersRelations = relations(users, ({ many }) => ({
   measurements: many(measurements),
   goals: many(goals),
-  milestones: many(milestones),
 }));
 
 export const metricTypesRelations = relations(metricTypes, ({ many }) => ({
   measurements: many(measurements),
   goals: many(goals),
-  milestones: many(milestones),
 }));
 
-export const measurementsRelations = relations(
-  measurements,
-  ({ one, many }) => ({
-    user: one(users, {
-      fields: [measurements.userId],
-      references: [users.id],
-    }),
-    metricType: one(metricTypes, {
-      fields: [measurements.metricTypeId],
-      references: [metricTypes.id],
-    }),
-    milestones: many(milestones),
+export const measurementsRelations = relations(measurements, ({ one }) => ({
+  user: one(users, {
+    fields: [measurements.userId],
+    references: [users.id],
   }),
-);
+  metricType: one(metricTypes, {
+    fields: [measurements.metricTypeId],
+    references: [metricTypes.id],
+  }),
+}));
 
 export const goalsRelations = relations(goals, ({ one }) => ({
   user: one(users, {
@@ -136,21 +121,6 @@ export const goalsRelations = relations(goals, ({ one }) => ({
   metricType: one(metricTypes, {
     fields: [goals.metricTypeId],
     references: [metricTypes.id],
-  }),
-}));
-
-export const milestonesRelations = relations(milestones, ({ one }) => ({
-  user: one(users, {
-    fields: [milestones.userId],
-    references: [users.id],
-  }),
-  metricType: one(metricTypes, {
-    fields: [milestones.metricTypeId],
-    references: [metricTypes.id],
-  }),
-  measurement: one(measurements, {
-    fields: [milestones.measurementId],
-    references: [measurements.id],
   }),
 }));
 
@@ -165,6 +135,3 @@ export type NewMeasurement = typeof measurements.$inferInsert;
 
 export type Goal = typeof goals.$inferSelect;
 export type NewGoal = typeof goals.$inferInsert;
-
-export type Milestone = typeof milestones.$inferSelect;
-export type NewMilestone = typeof milestones.$inferInsert;

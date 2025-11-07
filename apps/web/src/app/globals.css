@@ -1,4 +1,4 @@
-@import "@repo/tailwind-config/globals.css";
+@import '@repo/tailwind-config';
 
 @theme inline {
   --font-sans: var(--font-geist-sans);

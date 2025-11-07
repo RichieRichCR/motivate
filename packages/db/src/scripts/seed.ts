@@ -92,63 +92,37 @@ async function seed() {
     const goals = await db
       .insert(schema.goals)
       .values([
+        // Long-term goal: weight loss
         {
           userId: user1.id,
           metricTypeId: metricTypes[0].id, // weight
+          type: 'long_term',
           targetValue: '65.00',
           startDate: today.toISOString().split('T')[0],
           targetDate: futureDate.toISOString().split('T')[0],
-          achieved: false,
+          active: true,
         },
+        // Daily goal: steps
         {
           userId: user1.id,
           metricTypeId: metricTypes[1].id, // steps
+          type: 'daily',
           targetValue: '10000',
           startDate: today.toISOString().split('T')[0],
-          targetDate: futureDate.toISOString().split('T')[0],
-          achieved: false,
+          targetDate: null, // daily goals don't have end dates
+          active: true,
         },
       ])
       .returning();
 
     console.log(`✅ Created ${goals.length} goals`);
 
-    // 5. Create milestones
-    console.log('Creating milestones...');
-    const milestoneDate = new Date();
-    milestoneDate.setDate(milestoneDate.getDate() - 15); // 15 days ago
-
-    const milestones = await db
-      .insert(schema.milestones)
-      .values([
-        {
-          userId: user1.id,
-          metricTypeId: metricTypes[0].id, // weight
-          title: 'Lost 2kg!',
-          description: 'Successfully lost 2 kilograms from starting weight',
-          achievedAt: milestoneDate,
-          measurementId: insertedMeasurements[0].id,
-        },
-        {
-          userId: user1.id,
-          metricTypeId: metricTypes[1].id, // steps
-          title: '10,000 steps milestone',
-          description: 'First day hitting 10,000 steps goal',
-          achievedAt: milestoneDate,
-          measurementId: insertedMeasurements[2].id,
-        },
-      ])
-      .returning();
-
-    console.log(`✅ Created ${milestones.length} milestones`);
-
     console.log('\n🎉 Seeding completed successfully!');
     console.log('\nSummary:');
-    console.log(`- Users: 2`);
+    console.log(`- Users: 1`);
     console.log(`- Metric Types: ${metricTypes.length}`);
     console.log(`- Measurements: ${insertedMeasurements.length}`);
     console.log(`- Goals: ${goals.length}`);
-    console.log(`- Milestones: ${milestones.length}`);
   } catch (error) {
     console.error('❌ Error seeding database:', error);
     throw error;

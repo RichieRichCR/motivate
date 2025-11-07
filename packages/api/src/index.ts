@@ -5,16 +5,31 @@ import { HTTPException } from 'hono/http-exception';
 import { logger } from 'hono/logger';
 
 import health from './routes/health';
-import dataRoutes from './routes/api/v1/data';
+import userRoutes from './routes/api/v1/user';
+import metricsRoutes from './routes/api/v1/metrics';
+import { authMiddleware } from './middleware/auth';
+
 import { env } from './env';
+
+export const customLogger = (message: string, ...rest: string[]) => {
+  console.log(message, ...rest);
+};
 
 const app = new OpenAPIHono();
 
+// Register security scheme
+app.openAPIRegistry.registerComponent('securitySchemes', 'ApiKeyAuth', {
+  type: 'apiKey',
+  in: 'header',
+  name: 'x-api-key',
+});
+
 if (env.NODE_ENV !== 'test') {
-  app.use('*', (c, next) => {
-    if (c.req.path === '/api/health') return next();
-    return logger()(c, next);
-  });
+  // app.use('*', (c, next) => {
+  //   if (c.req.path === '/api/health') return next();
+  //   return logger()(c, next);
+  // });
+  app.use(logger(customLogger));
 }
 
 app
@@ -23,7 +38,10 @@ app
     return c.text('RR API!');
   })
   .route('/health', health)
-  .route('/api/v1/health', dataRoutes)
+  // Apply auth middleware to all /api/* routes
+  .use('/api/*', authMiddleware)
+  .route('/api/v1/user', userRoutes)
+  .route('/api/v1/metrics', metricsRoutes)
 
   .onError((err, c) => {
     console.error(err);
@@ -39,16 +57,10 @@ app.doc('/doc', {
     version: 'v0.1.0',
   },
   servers: [
-    // Add production URL when deployed
-    ...(env.NODE_ENV === 'production'
-      ? [
-          {
-            url: 'https://api.rd-studios.workers.dev',
-            description: 'Production Server',
-          },
-        ]
-      : []),
-    // Always include local dev server in non-production
+    {
+      url: 'https://api.rd-studios.workers.dev',
+      description: 'Production Server',
+    },
     ...(env.NODE_ENV !== 'production'
       ? [
           {
@@ -64,7 +76,6 @@ app.doc('/doc', {
 app.get('/ui', swaggerUI({ url: '/doc' }));
 
 export default app;
-
 export { app };
 
 export type AppType = typeof app;
