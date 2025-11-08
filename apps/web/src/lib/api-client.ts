@@ -100,6 +100,7 @@ export const api = {
         },
       });
       if (!response.ok) {
+        console.log('Response not ok:', apiKey);
         throw new Error(`Error fetching metric types: ${response.statusText}`);
       }
       return response.json() satisfies Promise<MetricSchemaResponse>;

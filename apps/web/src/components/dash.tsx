@@ -4,170 +4,115 @@ import { env } from '../../env';
 import { RadialChart } from './charts/radial';
 import { WeightChart } from './charts/weight';
 import { ContentCard } from './card';
+import { createMetricIdMap, DAYS_TO_FETCH, getDateRange } from '../lib/utils';
+import {
+  buildAllRadialChartConfigs,
+  convertWaterToLiters,
+  extractCurrentMetrics,
+  extractGoalTargets,
+  getMetricDate,
+  resolveAllMetricIds,
+  transformMeasurementData,
+} from '../lib/dashboard-helpers';
+
+export const revalidate = 1000 * 60 * 60 * 24;
 
 export const Dashboard = async () => {
   const userId = env.USER_ID;
-  const user = await api.user.get(userId);
-  const goals = await api.user.goals.get(userId);
-  const metrics = await api.metrics.get();
+  const { startDate, endDate } = getDateRange(DAYS_TO_FETCH);
 
-  console.log('User Data:', user);
+  const [user, goals, metrics] = await Promise.all([
+    api.user.get(userId),
+    api.user.goals.get(userId),
+    api.metrics.get(),
+  ]);
 
-  const weightId = metrics.data.find((m) => m.name === 'weight')?.id ?? 2;
-  const stepsId = metrics.data.find((m) => m.name === 'steps')?.id ?? 2;
-  const exerciseId = metrics.data.find((m) => m.name === 'exercise')?.id ?? 3;
-  const standingId = metrics.data.find((m) => m.name === 'standing')?.id ?? 3;
-  const distanceId = metrics.data.find((m) => m.name === 'distance')?.id ?? 5;
-  const waterId = metrics.data.find((m) => m.name === 'water')?.id ?? 4;
+  const metricIdMap = createMetricIdMap(metrics.data);
+  const metricIds = resolveAllMetricIds(metricIdMap);
 
-  const now = new Date();
-  const endDate = now.toISOString().split('T')[0];
-  const startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000)
-    .toISOString()
-    .split('T')[0];
+  const [stepsHistory, weightHistory] = await Promise.all([
+    api.user.measurements.getById({
+      userId,
+      measurementId: metricIds.steps,
+      startDate,
+      endDate,
+    }),
+    api.user.measurements.getById({
+      userId,
+      measurementId: metricIds.weight,
+      startDate,
+      endDate,
+    }),
+  ]);
 
-  const totalSteps = await api.user.measurements.getById({
-    userId,
-    measurementId: stepsId,
-    endDate,
-    startDate,
-  });
+  const stepsData = transformMeasurementData(stepsHistory.data);
+  const weightData = transformMeasurementData(weightHistory.data);
 
-  const stepsData = totalSteps.data.map((m) => ({
-    date: new Date(m.measuredAt).toISOString().split('T')[0],
-    value: Number(m.value),
-  }));
+  const currentMetrics = extractCurrentMetrics(user.data, metricIds);
 
-  const totalWeight = await api.user.measurements.getById({
-    userId,
-    measurementId: weightId,
-    endDate,
-    startDate,
-  });
+  const goalTargets = extractGoalTargets(goals.data, metricIds);
 
-  const weightData = totalWeight.data.map((m) => ({
-    date: new Date(m.measuredAt).toISOString().split('T')[0],
-    value: Number(m.value),
-  }));
+  const radialCharts = buildAllRadialChartConfigs(currentMetrics, goalTargets);
 
-  console.log('Weight Data:', weightData);
-
-  const steps = user.data.find((m) => m.metricTypeId === stepsId)?.value;
-  const stepsChartData = [{ steps, fill: 'var(--color-chart-2)' }];
-
-  const exercise = user.data.find((m) => m.metricTypeId === exerciseId)?.value;
-  const exerciseChartData = [{ exercise, fill: 'var(--color-chart-2)' }];
-
-  const standing = user.data.find((m) => m.metricTypeId === standingId)?.value;
-  const standingChartData = [{ standing, fill: 'var(--color-chart-2)' }];
-
-  const mergedData = weightData.map((weightEntry) => {
-    const stepEntry = stepsData.find((step) => step.date === weightEntry.date);
-    return {
-      date: weightEntry.date,
-      weight: weightEntry.value,
-      steps: stepEntry ? stepEntry.value : 0,
-    };
-  });
-  console.log('Exercise Chart Data:', mergedData);
+  const waterInLiters = convertWaterToLiters(currentMetrics.currentWater);
 
   return (
     <div className="w-full flex flex-col gap-8 px-4 py-6 md:px-8 lg:px-16">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <ContentCard
-          value={user.data.find((d) => d.metricTypeId === weightId)?.value}
+          value={currentMetrics.currentWeight}
           title="Current Weight"
           unit="Kgs"
-          date={
-            user.data
-              .find((d) => d.metricTypeId === weightId)
-              ?.measuredAt?.toString() ?? undefined
-          }
+          date={getMetricDate(user.data, metricIds.weight)}
         />
         <ContentCard
-          value={user.data.find((d) => d.metricTypeId === distanceId)?.value}
+          value={currentMetrics.currentDistance}
           title="Distance Walked"
           unit="Kms"
-          date={
-            user.data
-              .find((d) => d.metricTypeId === distanceId)
-              ?.measuredAt?.toString() ?? undefined
-          }
+          date={getMetricDate(user.data, metricIds.distance)}
         />
         <ContentCard
-          value={(
-            Number(user.data.find((d) => d.metricTypeId === waterId)?.value) /
-            1000
-          ).toString()}
+          value={waterInLiters}
           title="Water Drunk"
           unit="L"
-          date={
-            user.data
-              .find((d) => d.metricTypeId === waterId)
-              ?.measuredAt?.toString() ?? undefined
-          }
+          date={getMetricDate(user.data, metricIds.water)}
         />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <WeightChart weightData={weightData} />
         <StepsChart stepData={stepsData} />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <RadialChart
-          chartTitle={'steps'}
-          title={'Steps'}
-          description={'Steps taken today'}
-          chartData={stepsChartData}
-          target={
-            Number(
-              goals.data.find((g) => g.metricTypeId === stepsId)?.targetValue,
-            ) ?? 10000
-          }
-          chartConfig={{
-            steps: {
-              label: 'Steps',
-            },
-          }}
-          dataKey={'steps'}
+          chartTitle={radialCharts.steps.chartTitle}
+          title={radialCharts.steps.title}
+          description={radialCharts.steps.description}
+          chartData={radialCharts.steps.chartData}
+          target={radialCharts.steps.target}
+          chartConfig={radialCharts.steps.chartConfig}
+          dataKey={radialCharts.steps.dataKey}
           footer={undefined}
         />
         <RadialChart
-          chartTitle={'minutes'}
-          title={'Exercise'}
-          description={'Exercise Minutes today'}
-          chartData={exerciseChartData}
-          target={
-            Number(
-              goals.data.find((g) => g.metricTypeId === exerciseId)
-                ?.targetValue,
-            ) ?? 10000
-          }
-          chartConfig={{
-            steps: {
-              label: 'Minutes',
-            },
-          }}
-          dataKey={'exercise'}
+          chartTitle={radialCharts.exercise.chartTitle}
+          title={radialCharts.exercise.title}
+          description={radialCharts.exercise.description}
+          chartData={radialCharts.exercise.chartData}
+          target={radialCharts.exercise.target}
+          chartConfig={radialCharts.exercise.chartConfig}
+          dataKey={radialCharts.exercise.dataKey}
           footer={undefined}
         />
         <RadialChart
-          chartTitle={'minutes'}
-          title={'Standing'}
-          description={'Mintues Standing Today'}
-          chartData={standingChartData}
-          target={
-            Number(
-              goals.data.find((g) => g.metricTypeId === standingId)
-                ?.targetValue,
-            ) ?? 10000
-          }
-          chartConfig={{
-            standing: {
-              label: 'Minutes',
-            },
-          }}
-          dataKey={'standing'}
+          chartTitle={radialCharts.standing.chartTitle}
+          title={radialCharts.standing.title}
+          description={radialCharts.standing.description}
+          chartData={radialCharts.standing.chartData}
+          target={radialCharts.standing.target}
+          chartConfig={radialCharts.standing.chartConfig}
+          dataKey={radialCharts.standing.dataKey}
           footer={undefined}
         />
       </div>
