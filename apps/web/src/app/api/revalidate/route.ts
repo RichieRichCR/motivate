@@ -2,7 +2,7 @@ import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 import { env } from '@/env';
 
-export default async function GET(request: NextRequest) {
+export default async function POST(request: NextRequest) {
   //get headers
   const headers = request.headers;
   const revalidateSecret = headers.get('x-revalidate-secret');
