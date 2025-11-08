@@ -16,7 +16,9 @@ export const ContentCard = ({ value, title, unit, date }: ContentCardProps) => {
         </div>
       </CardHeader>
       <CardContent className="px-2 sm:px-6">
-        <div className="text-8xl font-black">{displayValue}</div>
+        <div className="text-5xl md:text-6xl lg:text-8xl font-black">
+          {displayValue}
+        </div>
         <div className="flex flex-row justify-between items-center mt-2 flex-nowrap">
           <div className="text-sm text-muted-foreground">{unit}</div>
           <div className="text-sm text-muted-foreground">{displayDate}</div>
