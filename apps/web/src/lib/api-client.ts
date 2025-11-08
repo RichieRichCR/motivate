@@ -16,7 +16,7 @@ export const api = {
         headers: {
           'x-api-key': apiKey,
         },
-        next: { revalidate: 86400, tags: ['metric', `metric:${userId}`] }, // Revalidate every 24 hours
+        next: { revalidate: 60, tags: ['metric', `metric:${userId}`] }, // No cache - always fetch fresh
       });
       if (!response.ok) {
         throw new Error(`Error fetching user data: ${response.statusText}`);
@@ -70,9 +70,9 @@ export const api = {
               'x-api-key': apiKey,
             },
             next: {
-              revalidate: 86400,
+              revalidate: 60, // No cache - always fetch fresh data
               tags: ['metric', `metric:${userId}:${measurementId}`],
-            }, // Revalidate every 24 hours
+            },
           },
         );
         if (!response.ok) {
@@ -89,7 +89,7 @@ export const api = {
           headers: {
             'x-api-key': apiKey,
           },
-          next: { revalidate: 86400, tags: ['metric', `metric:${userId}`] }, // Revalidate every 24 hours
+          next: { revalidate: 60, tags: ['metric', `metric:${userId}`] }, // No cache - always fetch fresh
         });
         if (!response.ok) {
           throw new Error(`Error fetching user data: ${response.statusText}`);
@@ -104,7 +104,7 @@ export const api = {
         headers: {
           'x-api-key': apiKey,
         },
-        next: { revalidate: 86400, tags: ['metric', `metric`] }, // Revalidate every 24 hours
+        next: { revalidate: 60, tags: ['metric', `metric`] }, // Cache for 1 hour (metrics change rarely)
       });
       if (!response.ok) {
         console.log('Response not ok:', apiKey);
@@ -117,7 +117,7 @@ export const api = {
         headers: {
           'x-api-key': apiKey,
         },
-        next: { revalidate: 86400, tags: ['metric', `metric:${id}`] }, // Revalidate every 24 hours
+        next: { revalidate: 60, tags: ['metric', `metric:${id}`] }, // Cache for 1 hour (metrics change rarely)
       });
       if (!response.ok) {
         throw new Error(`Error fetching metric type: ${response.statusText}`);
@@ -136,7 +136,6 @@ export const api = {
           'x-api-key': apiKey,
         },
         body: JSON.stringify(data),
-        next: { revalidate: 86400 }, // Revalidate every 24 hours
       });
       if (!response.ok) {
         throw new Error(`Error posting metric type: ${response.statusText}`);

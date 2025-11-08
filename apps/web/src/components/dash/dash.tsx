@@ -59,7 +59,7 @@ export const Dashboard = async () => {
   const waterInLiters = convertWaterToLiters(currentMetrics.currentWater);
 
   return (
-    <div className="w-full flex flex-col gap-8 px-4 py-6 md:px-8 lg:px-16">
+    <div className="w-full flex flex-col gap-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <ContentCard
           value={currentMetrics.currentWeight}

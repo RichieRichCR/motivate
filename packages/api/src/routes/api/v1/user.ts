@@ -330,6 +330,13 @@ app
         const startDate = c.req.query('startDate');
         const endDate = c.req.query('endDate');
 
+        console.log('API Query params:', {
+          userId,
+          metricTypeId,
+          startDate,
+          endDate,
+        });
+
         if (!userId) {
           return c.json({ error: 'Bad Request - Missing user ID' }, 400);
         }
@@ -346,7 +353,10 @@ app
             }
 
             if (endDate) {
-              conditions.push(lte(measurement.measuredAt, new Date(endDate)));
+              // Add one day to endDate to include all measurements from that day
+              const endDateTime = new Date(endDate);
+              endDateTime.setDate(endDateTime.getDate() + 1);
+              conditions.push(lte(measurement.measuredAt, endDateTime));
             }
 
             return and(...conditions);
@@ -355,16 +365,43 @@ app
           with: { metricType: true },
         });
 
-        const measurements = databaseMeasurements.map((m) => ({
-          id: m.id,
-          metricTypeId: m.metricTypeId,
-          metricName: m.metricType.name,
-          metricUnit: m.metricType.unit,
-          value: m.value,
-          measuredAt: m.measuredAt,
-          source: m.source,
-          notes: m.notes,
-        }));
+        console.log('Database Measurements:', databaseMeasurements);
+
+        // Group measurements by date and keep only the latest measurement per date
+        const measurementsByDate = new Map<
+          string,
+          (typeof databaseMeasurements)[0]
+        >();
+
+        databaseMeasurements.forEach((m) => {
+          // Extract just the date part (YYYY-MM-DD) in local timezone
+          const dateKey = m.measuredAt.toISOString().split('T')[0];
+
+          // If we haven't seen this date yet, or this measurement is later in the day
+          const existing = measurementsByDate.get(dateKey);
+          if (!existing || m.measuredAt > existing.measuredAt) {
+            measurementsByDate.set(dateKey, m);
+          }
+        });
+
+        // Convert map back to array and sort by date
+        const measurements = Array.from(measurementsByDate.values())
+          .sort((a, b) => a.measuredAt.getTime() - b.measuredAt.getTime())
+          .map((m) => ({
+            id: m.id,
+            metricTypeId: m.metricTypeId,
+            metricName: m.metricType.name,
+            metricUnit: m.metricType.unit,
+            value: m.value,
+            measuredAt: m.measuredAt,
+            source: m.source,
+            notes: m.notes,
+          }));
+
+        console.log(
+          'Aggregated measurements (one per date):',
+          measurements.length,
+        );
 
         const payload = MeasurementsSchema.parse({
           status: 'ok',

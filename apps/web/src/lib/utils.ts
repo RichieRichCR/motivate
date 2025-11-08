@@ -29,6 +29,7 @@ export const getDateRange = (daysBack: number) => {
   const startDate = new Date(now.getTime() - daysBack * MILLISECONDS_PER_DAY)
     .toISOString()
     .split('T')[0];
+
   return { startDate, endDate };
 };
 

@@ -43,7 +43,11 @@ export function WeightChart({
 
   const filteredData = weightData.filter((item) => {
     const date = new Date(item.date);
+    date.setHours(0, 0, 0, 0); // Normalize to midnight
+
     const referenceDate = new Date();
+    referenceDate.setHours(0, 0, 0, 0); // Normalize to midnight
+
     let daysToSubtract = 90; // Default to 90 days
     if (timeRange === '30d') {
       daysToSubtract = 30;
@@ -54,6 +58,8 @@ export function WeightChart({
     startDate.setDate(startDate.getDate() - daysToSubtract);
     return date >= startDate;
   });
+
+  console.log('Filtered Data:', filteredData);
 
   return (
     <Card className="">
