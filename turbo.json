@@ -3,7 +3,8 @@
   "ui": "tui",
   "globalEnv": [
     "API_KEY",
-    "USER_ID"
+    "USER_ID",
+    "REVALIDATE_SECRET"
   ],
   "tasks": {
     "build": {
@@ -23,7 +24,8 @@
       ],
       "env": [
         "API_KEY",
-        "USER_ID"
+        "USER_ID",
+        "REVALIDATE_SECRET"
       ]
     },
     "test": {
@@ -57,7 +59,8 @@
       ],
       "env": [
         "API_KEY",
-        "USER_ID"
+        "USER_ID",
+        "REVALIDATE_SECRET"
       ]
     },
     "build:components": {
@@ -66,7 +69,8 @@
       ],
       "env": [
         "API_KEY",
-        "USER_ID"
+        "USER_ID",
+        "REVALIDATE_SECRET"
       ]
     }
   }
