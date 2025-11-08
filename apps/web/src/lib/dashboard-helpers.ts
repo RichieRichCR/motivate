@@ -28,6 +28,7 @@ export interface DashboardMetrics {
   currentSteps?: string;
   currentExercise?: string;
   currentStanding?: string;
+  dateMeasured?: string;
 }
 
 export interface DashboardGoals {
@@ -37,7 +38,7 @@ export interface DashboardGoals {
 }
 
 export interface RadialChartConfig {
-  chartTitle: string;
+  unit: string;
   title: string;
   description: string;
   chartData: Array<{ [key: string]: number | string }>;
@@ -106,6 +107,11 @@ export const extractCurrentMetrics = (
   const dataMap = new Map(
     userData.map((item) => [item.metricTypeId, item.value]),
   );
+  const extractDate = dataMap.get(metricIds.weight)
+    ? userData
+        .find((item) => item.metricTypeId === metricIds.weight)
+        ?.measuredAt?.toString()
+    : undefined;
 
   return {
     currentWeight: dataMap.get(metricIds.weight),
@@ -114,6 +120,7 @@ export const extractCurrentMetrics = (
     currentSteps: dataMap.get(metricIds.steps),
     currentExercise: dataMap.get(metricIds.exercise),
     currentStanding: dataMap.get(metricIds.standing),
+    dateMeasured: extractDate,
   };
 };
 
@@ -204,15 +211,24 @@ export const createRadialChartData = (
  * Builds a complete configuration object for radial charts
  * This provides a consistent interface for all radial charts
  */
-export const buildRadialChartConfig = (
-  dataKey: string,
-  title: string,
-  description: string,
-  value: string | undefined,
-  target: number,
-  label: string,
-): RadialChartConfig => ({
-  chartTitle: dataKey,
+export const buildRadialChartConfig = ({
+  dataKey,
+  unit,
+  title,
+  description,
+  value,
+  target,
+  label,
+}: {
+  dataKey: string;
+  unit: string;
+  title: string;
+  description: string;
+  value: string | undefined;
+  target: number;
+  label: string;
+}): RadialChartConfig => ({
+  unit,
   title,
   description,
   chartData: createRadialChartData(value, dataKey),
@@ -229,30 +245,41 @@ export const buildAllRadialChartConfigs = (
   currentMetrics: DashboardMetrics,
   goalTargets: DashboardGoals,
 ) => {
+  const dateMeasured = new Date(
+    currentMetrics.dateMeasured ?? '',
+  ).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+  });
   return {
-    steps: buildRadialChartConfig(
-      'steps',
-      'Steps',
-      'Steps taken today',
-      currentMetrics.currentSteps,
-      goalTargets.steps,
-      'Steps',
-    ),
-    exercise: buildRadialChartConfig(
-      'exercise',
-      'Exercise',
-      'Exercise minutes today',
-      currentMetrics.currentExercise,
-      goalTargets.exercise,
-      'Minutes',
-    ),
-    standing: buildRadialChartConfig(
-      'standing',
-      'Standing',
-      'Minutes standing today',
-      currentMetrics.currentStanding,
-      goalTargets.standing,
-      'Minutes',
-    ),
+    steps: buildRadialChartConfig({
+      dataKey: 'steps',
+      unit: 'Steps',
+      title: 'Steps',
+      description: `Steps taken on ${dateMeasured}`,
+      value: currentMetrics.currentSteps,
+      target: goalTargets.steps,
+      label: 'Steps',
+    }),
+
+    standing: buildRadialChartConfig({
+      dataKey: 'standing',
+      unit: 'Minutes',
+      title: 'Standing',
+      description: `Minutes standing on ${dateMeasured}`,
+      value: currentMetrics.currentStanding,
+      target: goalTargets.standing,
+      label: 'Minutes',
+    }),
+
+    exercise: buildRadialChartConfig({
+      dataKey: 'exercise',
+      unit: 'Minutes',
+      title: 'Exercise',
+      description: `Exercise minutes on ${dateMeasured}`,
+      value: currentMetrics.currentExercise,
+      target: goalTargets.exercise,
+      label: 'Minutes',
+    }),
   };
 };

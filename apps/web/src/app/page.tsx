@@ -1,4 +1,4 @@
-import { Dashboard } from '../components/dash';
+import { Dashboard } from '../components/dash/dash';
 
 // Revalidate every 24 hours
 export const revalidate = 86400; // 60 * 60 * 24 seconds

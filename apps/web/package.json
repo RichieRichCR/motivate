@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@repo/api": "workspace:*",
@@ -22,15 +26,24 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@playwright/test": "^1.48.2",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@repo/vitest-presets": "workspace:*",
     "@tailwindcss/postcss": "catalog:",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.0.1",
+    "@testing-library/user-event": "^14.5.2",
     "@types/node": "catalog:",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/ui": "^2.1.8",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "catalog:",
     "eslint-config-next": "16.0.1",
-    "tailwindcss": "catalog:"
+    "jsdom": "^25.0.1",
+    "tailwindcss": "catalog:",
+    "vitest": "^2.1.8"
   }
 }

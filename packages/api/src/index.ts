@@ -25,10 +25,6 @@ app.openAPIRegistry.registerComponent('securitySchemes', 'ApiKeyAuth', {
 });
 
 if (env.NODE_ENV !== 'test') {
-  // app.use('*', (c, next) => {
-  //   if (c.req.path === '/api/health') return next();
-  //   return logger()(c, next);
-  // });
   app.use(logger(customLogger));
 }
 

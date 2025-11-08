@@ -1,10 +1,14 @@
-import { StepsChart } from './charts/steps';
-import { api } from '../lib/api-client';
+import { StepsChart } from '../charts/steps';
+import { api } from '../../lib/api-client';
 import { env } from '../../env';
-import { RadialChart } from './charts/radial';
-import { WeightChart } from './charts/weight';
-import { ContentCard } from './card';
-import { createMetricIdMap, DAYS_TO_FETCH, getDateRange } from '../lib/utils';
+import { RadialChart } from '../charts/radial';
+import { WeightChart } from '../charts/weight';
+import { ContentCard } from '../card/card';
+import {
+  createMetricIdMap,
+  DAYS_TO_FETCH,
+  getDateRange,
+} from '../../lib/utils';
 import {
   buildAllRadialChartConfigs,
   convertWaterToLiters,
@@ -13,7 +17,7 @@ import {
   getMetricDate,
   resolveAllMetricIds,
   transformMeasurementData,
-} from '../lib/dashboard-helpers';
+} from '../../lib/dashboard-helpers';
 
 export const Dashboard = async () => {
   const userId = env.USER_ID;
@@ -82,9 +86,9 @@ export const Dashboard = async () => {
         <StepsChart stepData={stepsData} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
         <RadialChart
-          chartTitle={radialCharts.steps.chartTitle}
+          unit={radialCharts.steps.unit}
           title={radialCharts.steps.title}
           description={radialCharts.steps.description}
           chartData={radialCharts.steps.chartData}
@@ -94,7 +98,7 @@ export const Dashboard = async () => {
           footer={undefined}
         />
         <RadialChart
-          chartTitle={radialCharts.exercise.chartTitle}
+          unit={radialCharts.exercise.unit}
           title={radialCharts.exercise.title}
           description={radialCharts.exercise.description}
           chartData={radialCharts.exercise.chartData}
@@ -104,7 +108,7 @@ export const Dashboard = async () => {
           footer={undefined}
         />
         <RadialChart
-          chartTitle={radialCharts.standing.chartTitle}
+          unit={radialCharts.standing.unit}
           title={radialCharts.standing.title}
           description={radialCharts.standing.description}
           chartData={radialCharts.standing.chartData}

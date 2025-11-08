@@ -4,6 +4,7 @@ export const envSchema = z.object({
   NEXT_PUBLIC_API_URL: z.string().url().optional(),
   API_KEY: z.string().min(1),
   USER_ID: z.string().min(1),
+  REVALIDATE_SECRET: z.string().min(1),
 });
 export type Env = z.infer<typeof envSchema>;
 

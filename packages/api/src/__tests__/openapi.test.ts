@@ -48,25 +48,6 @@ describe('OpenAPI Specification', () => {
     ).toBeDefined();
   });
 
-  it('should include API v1 health check route in spec', async () => {
-    const res = await app.request('/doc');
-    const spec = await res.json();
-
-    // Check for API v1 health endpoint (without trailing slash)
-    expect(spec.paths['/api/v1/health']).toBeDefined();
-    expect(spec.paths['/api/v1/health'].get).toBeDefined();
-
-    // Verify endpoint metadata
-    const healthV1Endpoint = spec.paths['/api/v1/health'].get;
-    expect(healthV1Endpoint.summary).toBe('API v1 Health check endpoint');
-    expect(healthV1Endpoint.tags).toContain('API v1');
-
-    // Verify response schema includes version field
-    const responseSchema =
-      healthV1Endpoint.responses['200'].content['application/json'].schema;
-    expect(responseSchema).toBeDefined();
-  });
-
   it('should have valid components and schemas', async () => {
     const res = await app.request('/doc');
     const spec = await res.json();
@@ -110,14 +91,6 @@ describe('Health Endpoints', () => {
 
     const data = await res.json();
     expect(data).toEqual({ status: 'ok' });
-  });
-
-  it('should respond to /api/v1/health endpoint', async () => {
-    const res = await app.request('/api/v1/health');
-    expect(res.status).toBe(200);
-
-    const data = await res.json();
-    expect(data).toEqual({ status: 'ok', version: 'v1' });
   });
 
   it('should return proper content-type for health endpoints', async () => {

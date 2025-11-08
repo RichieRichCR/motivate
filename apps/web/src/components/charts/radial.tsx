@@ -21,7 +21,7 @@ import { ChartConfig, ChartContainer } from '@repo/ui';
 export const description = 'A radial chart with text';
 
 export function RadialChart({
-  chartTitle,
+  unit,
   title,
   description,
   chartData,
@@ -30,7 +30,7 @@ export function RadialChart({
   dataKey,
   footer,
 }: {
-  chartTitle: string;
+  unit: string;
   title: string;
   description: string;
   chartData: Record<string, unknown>[];
@@ -48,21 +48,21 @@ export function RadialChart({
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
+          className="mx-auto aspect-square max-h-[400px] lg:max-h-[300px] xl:max-h-[400px] w-full"
         >
           <RadialBarChart
             data={chartData}
             startAngle={0}
             endAngle={(Number(chartData[0][dataKey]) / target) * 360}
-            innerRadius={80}
-            outerRadius={90}
+            innerRadius={140}
+            outerRadius={160}
           >
             <PolarGrid
               gridType="circle"
               radialLines={false}
               stroke="none"
               className="first:fill-muted last:fill-background"
-              polarRadius={[86, 74]}
+              polarRadius={[146, 134]}
             />
             <RadialBar dataKey={dataKey} background cornerRadius={10} />
             <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
@@ -79,7 +79,7 @@ export function RadialChart({
                         <tspan
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="fill-foreground text-2xl font-bold"
+                          className="fill-foreground text-5xl font-bold"
                         >
                           {(
                             chartData[0]?.[dataKey] as number
@@ -87,10 +87,10 @@ export function RadialChart({
                         </tspan>
                         <tspan
                           x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
+                          y={(viewBox.cy || 0) + 32}
                           className="fill-muted-foreground"
                         >
-                          {chartTitle}
+                          {unit}
                         </tspan>
                       </text>
                     );
@@ -101,7 +101,9 @@ export function RadialChart({
           </RadialBarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">{footer}</CardFooter>
+      {footer && (
+        <CardFooter className="flex-col gap-2 text-sm">{footer}</CardFooter>
+      )}
     </Card>
   );
 }
