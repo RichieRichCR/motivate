@@ -5,6 +5,7 @@ export interface ContentCardProps {
   title: string;
   unit: string;
   date: string | undefined;
+  className?: string;
 }
 
 export type MetricName = keyof typeof METRIC_CONFIG;

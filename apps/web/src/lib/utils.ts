@@ -1,7 +1,7 @@
 import { ChartDataPoint, MetricData } from '../types';
 
 export const formatDate = (date: string): string => {
-  return new Date(date).toLocaleDateString();
+  return new Date(date).toLocaleDateString('en-GB');
 };
 
 // Constants
@@ -12,12 +12,13 @@ export const DEFAULT_TARGET = 10000;
 
 // Metric name constants and default IDs
 export const METRIC_CONFIG = {
-  weight: { name: 'weight', defaultId: 2 },
+  weight: { name: 'weight', defaultId: 1 },
   steps: { name: 'steps', defaultId: 2 },
   exercise: { name: 'exercise', defaultId: 3 },
-  standing: { name: 'standing', defaultId: 3 },
+  standing: { name: 'standing', defaultId: 6 },
   distance: { name: 'distance', defaultId: 5 },
   water: { name: 'water', defaultId: 4 },
+  energy: { name: 'energy', defaultId: 7 },
 } as const;
 
 // Helper Types

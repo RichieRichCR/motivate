@@ -18,6 +18,8 @@ import {
   resolveAllMetricIds,
   transformMeasurementData,
 } from '../../lib/dashboard-helpers';
+import { TitleSection } from '../title/title-section';
+import { ChartArea } from '../charts/area-chart';
 
 export const Dashboard = async () => {
   const userId = env.USER_ID;
@@ -32,7 +34,7 @@ export const Dashboard = async () => {
   const metricIdMap = createMetricIdMap(metrics.data);
   const metricIds = resolveAllMetricIds(metricIdMap);
 
-  const [stepsHistory, weightHistory] = await Promise.all([
+  const [stepsHistory, weightHistory, energyHistory] = await Promise.all([
     api.user.measurements.getById({
       userId,
       measurementId: metricIds.steps,
@@ -45,10 +47,19 @@ export const Dashboard = async () => {
       startDate,
       endDate,
     }),
+    api.user.measurements.getById({
+      userId,
+      measurementId: metricIds.energy,
+      startDate,
+      endDate,
+    }),
   ]);
 
   const stepsData = transformMeasurementData(stepsHistory.data);
   const weightData = transformMeasurementData(weightHistory.data);
+  const energyData = transformMeasurementData(energyHistory.data);
+
+  console.log('energyData', energyData);
 
   const currentMetrics = extractCurrentMetrics(user.data, metricIds);
 
@@ -56,10 +67,11 @@ export const Dashboard = async () => {
 
   const radialCharts = buildAllRadialChartConfigs(currentMetrics, goalTargets);
 
-  const waterInLiters = convertWaterToLiters(currentMetrics.currentWater);
-
   return (
     <div className="w-full flex flex-col gap-8">
+      <TitleSection className="w-full">
+        <h1 className="text-xl">Motivate RichieRich</h1>
+      </TitleSection>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <ContentCard
           value={currentMetrics.currentWeight}
@@ -68,24 +80,26 @@ export const Dashboard = async () => {
           date={getMetricDate(user.data, metricIds.weight)}
         />
         <ContentCard
-          value={currentMetrics.currentDistance}
-          title="Distance Walked"
-          unit="Kms"
-          date={getMetricDate(user.data, metricIds.distance)}
+          value={goalTargets.weight.toString()}
+          title="Target Weight"
+          unit="Kgs"
+          date={getMetricDate(user.data, metricIds.weight)}
         />
         <ContentCard
-          value={waterInLiters}
-          title="Water Drunk"
-          unit="L"
-          date={getMetricDate(user.data, metricIds.water)}
+          value={(Number(currentMetrics.currentWeight) - goalTargets.weight)
+            .toFixed(2)
+            .toString()}
+          title="Weight Difference"
+          unit="Kgs"
+          date={getMetricDate(user.data, metricIds.weight)}
+          className={
+            Number(currentMetrics.currentWeight) - goalTargets.weight >= 0
+              ? 'text-red-600'
+              : 'text-green-600'
+          }
         />
       </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <WeightChart weightData={weightData} />
-        <StepsChart stepData={stepsData} />
-      </div>
-
+      <TitleSection>Daily Activity</TitleSection>
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
         <RadialChart
           unit={radialCharts.steps.unit}
@@ -108,6 +122,27 @@ export const Dashboard = async () => {
           footer={undefined}
         />
         <RadialChart
+          unit={radialCharts.distance.unit}
+          title={radialCharts.distance.title}
+          description={radialCharts.distance.description}
+          chartData={radialCharts.distance.chartData}
+          target={radialCharts.distance.target}
+          chartConfig={radialCharts.distance.chartConfig}
+          dataKey={radialCharts.distance.dataKey}
+          footer={undefined}
+        />
+        <RadialChart
+          unit={radialCharts.water.unit}
+          title={radialCharts.water.title}
+          description={radialCharts.water.description}
+          chartData={radialCharts.water.chartData}
+          target={radialCharts.water.target}
+          chartConfig={radialCharts.water.chartConfig}
+          dataKey={radialCharts.water.dataKey}
+          footer={undefined}
+        />
+
+        <RadialChart
           unit={radialCharts.standing.unit}
           title={radialCharts.standing.title}
           description={radialCharts.standing.description}
@@ -116,6 +151,46 @@ export const Dashboard = async () => {
           chartConfig={radialCharts.standing.chartConfig}
           dataKey={radialCharts.standing.dataKey}
           footer={undefined}
+        />
+
+        <RadialChart
+          unit={radialCharts.energy.unit}
+          title={radialCharts.energy.title}
+          description={radialCharts.energy.description}
+          chartData={radialCharts.energy.chartData}
+          target={radialCharts.energy.target}
+          chartConfig={radialCharts.energy.chartConfig}
+          dataKey={radialCharts.energy.dataKey}
+          footer={undefined}
+        />
+      </div>
+
+      <TitleSection>Activity</TitleSection>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <WeightChart weightData={weightData} />
+        <StepsChart stepData={stepsData} />
+        <ChartArea
+          chartData={weightData}
+          title={'Daily Weight'}
+          description={'Weight changes over time.'}
+          chartConfig={{}}
+          series={[{ dataKey: 'value', color: 'var(--color-chart-4)' }]}
+          defaultTimeRange={'7d'}
+          dateKey={'value'}
+          showLegend={false}
+          showTimeRange={true}
+        />
+        <ChartArea
+          chartData={energyData}
+          title={'Daily Active Energy'}
+          description={'Active energy expenditure over time.'}
+          chartConfig={{}}
+          series={[{ dataKey: 'value', color: 'var(--color-chart-4)' }]}
+          defaultTimeRange={'7d'}
+          dateKey={'value'}
+          showLegend={false}
+          showTimeRange={true}
         />
       </div>
     </div>

@@ -19,6 +19,7 @@ export interface MetricIds {
   standing: number;
   distance: number;
   water: number;
+  energy: number;
 }
 
 export interface DashboardMetrics {
@@ -28,13 +29,18 @@ export interface DashboardMetrics {
   currentSteps?: string;
   currentExercise?: string;
   currentStanding?: string;
+  currentEnergy?: string;
   dateMeasured?: string;
 }
 
 export interface DashboardGoals {
+  weight: number;
   steps: number;
   exercise: number;
   standing: number;
+  water: number;
+  distance: number;
+  energy: number;
 }
 
 export interface RadialChartConfig {
@@ -86,6 +92,7 @@ export const resolveAllMetricIds = (
     standing: resolver('standing'),
     distance: resolver('distance'),
     water: resolver('water'),
+    energy: resolver('energy'),
   };
 };
 
@@ -120,6 +127,7 @@ export const extractCurrentMetrics = (
     currentSteps: dataMap.get(metricIds.steps),
     currentExercise: dataMap.get(metricIds.exercise),
     currentStanding: dataMap.get(metricIds.standing),
+    currentEnergy: dataMap.get(metricIds.energy),
     dateMeasured: extractDate,
   };
 };
@@ -143,9 +151,13 @@ export const extractGoalTargets = (
   );
 
   return {
+    weight: goalsMap.get(metricIds.weight) ?? defaultTarget,
     steps: goalsMap.get(metricIds.steps) ?? defaultTarget,
     exercise: goalsMap.get(metricIds.exercise) ?? defaultTarget,
     standing: goalsMap.get(metricIds.standing) ?? defaultTarget,
+    distance: goalsMap.get(metricIds.distance) ?? defaultTarget,
+    water: goalsMap.get(metricIds.water) ?? defaultTarget,
+    energy: goalsMap.get(metricIds.exercise) ?? defaultTarget,
   };
 };
 
@@ -247,7 +259,7 @@ export const buildAllRadialChartConfigs = (
 ) => {
   const dateMeasured = new Date(
     currentMetrics.dateMeasured ?? '',
-  ).toLocaleDateString(undefined, {
+  ).toLocaleDateString('en-GB', {
     month: 'short',
     day: 'numeric',
   });
@@ -280,6 +292,38 @@ export const buildAllRadialChartConfigs = (
       value: currentMetrics.currentExercise,
       target: goalTargets.exercise,
       label: 'Minutes',
+    }),
+
+    water: buildRadialChartConfig({
+      dataKey: 'water',
+      unit: 'ml',
+      title: 'Water Drunk',
+      description: `Water drunk on ${dateMeasured}`,
+      value: currentMetrics.currentWater,
+      target: goalTargets.water,
+      label: 'ml',
+    }),
+
+    distance: buildRadialChartConfig({
+      dataKey: 'distance',
+      unit: 'Kms',
+      title: 'Distance Walked',
+      description: `Distance on ${dateMeasured}`,
+      value: currentMetrics.currentDistance,
+      target: goalTargets.distance,
+      label: 'Kms',
+    }),
+
+    energy: buildRadialChartConfig({
+      dataKey: 'energy',
+      unit: 'kcal',
+      title: 'Active Energy',
+      description: `Active energy on ${dateMeasured}`,
+      value: Math.floor(Number(currentMetrics.currentEnergy ?? '0'))
+        .toFixed(0)
+        .toString(),
+      target: goalTargets.energy,
+      label: 'kcal',
     }),
   };
 };

@@ -112,7 +112,7 @@ export function StepsChart({
               minTickGap={32}
               tickFormatter={(value) => {
                 const date = new Date(value);
-                return date.toLocaleDateString('en-US', {
+                return date.toLocaleDateString('en-GB', {
                   month: 'short',
                   day: 'numeric',
                 });
@@ -123,7 +123,7 @@ export function StepsChart({
               content={
                 <ChartTooltipContent
                   labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString('en-US', {
+                    return new Date(value).toLocaleDateString('en-GB', {
                       month: 'short',
                       day: 'numeric',
                     });

@@ -6,13 +6,20 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  cn,
 } from '@repo/ui';
 import { ContentCardProps } from '../../types';
 
-export const ContentCard = ({ value, title, unit, date }: ContentCardProps) => {
+export const ContentCard = ({
+  value,
+  title,
+  unit,
+  date,
+  className,
+}: ContentCardProps) => {
   const displayValue = value ?? '—';
   const displayDate = date
-    ? `as of ${new Date(date).toLocaleDateString(undefined, {
+    ? `on ${new Date(date).toLocaleDateString('en-GB', {
         month: 'short',
         day: 'numeric',
       })}`
@@ -26,7 +33,7 @@ export const ContentCard = ({ value, title, unit, date }: ContentCardProps) => {
           <CardDescription>{displayDate}</CardDescription>
         </div>
       </CardHeader>
-      <CardContent className="px-4 sm:px-6 ">
+      <CardContent className={cn('px-6', className)}>
         <div className="text-6xl xk:text-7xl 2xl:text-8xl font-black flex flex-row justify-start items-baseline mt-2 flex-nowrap">
           {displayValue}
           <div className="text-sm text-muted-foreground">{unit}</div>
