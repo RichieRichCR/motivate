@@ -17,8 +17,8 @@ export default async function POST(request: NextRequest) {
 
   try {
     // Revalidate the homepage
-    await revalidatePath('/');
     await revalidateTag('metric', 'max');
+    await revalidatePath('/');
     return NextResponse.json({ revalidated: true, now: Date.now() });
   } catch (err) {
     return NextResponse.json(
