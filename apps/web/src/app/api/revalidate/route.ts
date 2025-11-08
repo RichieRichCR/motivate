@@ -1,4 +1,4 @@
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 import { env } from '@/env';
 
@@ -18,6 +18,7 @@ export default async function POST(request: NextRequest) {
   try {
     // Revalidate the homepage
     await revalidatePath('/');
+    await revalidateTag('metric', 'max');
     return NextResponse.json({ revalidated: true, now: Date.now() });
   } catch (err) {
     return NextResponse.json(

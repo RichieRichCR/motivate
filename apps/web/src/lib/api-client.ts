@@ -16,7 +16,7 @@ export const api = {
         headers: {
           'x-api-key': apiKey,
         },
-        next: { revalidate: 86400 }, // Revalidate every 24 hours
+        next: { revalidate: 86400, tags: ['metric', `metric:${userId}`] }, // Revalidate every 24 hours
       });
       if (!response.ok) {
         throw new Error(`Error fetching user data: ${response.statusText}`);
@@ -69,7 +69,10 @@ export const api = {
             headers: {
               'x-api-key': apiKey,
             },
-            next: { revalidate: 86400 }, // Revalidate every 24 hours
+            next: {
+              revalidate: 86400,
+              tags: ['metric', `metric:${userId}:${measurementId}`],
+            }, // Revalidate every 24 hours
           },
         );
         if (!response.ok) {
@@ -86,7 +89,7 @@ export const api = {
           headers: {
             'x-api-key': apiKey,
           },
-          next: { revalidate: 86400 }, // Revalidate every 24 hours
+          next: { revalidate: 86400, tags: ['metric', `metric:${userId}`] }, // Revalidate every 24 hours
         });
         if (!response.ok) {
           throw new Error(`Error fetching user data: ${response.statusText}`);
@@ -101,7 +104,7 @@ export const api = {
         headers: {
           'x-api-key': apiKey,
         },
-        next: { revalidate: 86400 }, // Revalidate every 24 hours
+        next: { revalidate: 86400, tags: ['metric', `metric`] }, // Revalidate every 24 hours
       });
       if (!response.ok) {
         console.log('Response not ok:', apiKey);
@@ -114,7 +117,7 @@ export const api = {
         headers: {
           'x-api-key': apiKey,
         },
-        next: { revalidate: 86400 }, // Revalidate every 24 hours
+        next: { revalidate: 86400, tags: ['metric', `metric:${id}`] }, // Revalidate every 24 hours
       });
       if (!response.ok) {
         throw new Error(`Error fetching metric type: ${response.statusText}`);
