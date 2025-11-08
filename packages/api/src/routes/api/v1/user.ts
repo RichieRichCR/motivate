@@ -4,7 +4,7 @@ import { Context } from 'hono';
 import { db } from '@repo/db/client';
 import { measurements, metricTypes, users } from '@repo/db/schema';
 import { desc, eq, gte, lte } from '@repo/db';
-import { customLogger } from '@/index';
+import { customLogger } from '../../../index';
 import { Measurement } from '../../../../../db/src/schema';
 
 // Define the response schema

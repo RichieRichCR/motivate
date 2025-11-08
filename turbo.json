@@ -1,6 +1,10 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
+  "globalEnv": [
+    "API_KEY",
+    "USER_ID"
+  ],
   "tasks": {
     "build": {
       "inputs": [
