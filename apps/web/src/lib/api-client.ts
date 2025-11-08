@@ -16,6 +16,7 @@ export const api = {
         headers: {
           'x-api-key': apiKey,
         },
+        next: { revalidate: 86400 }, // Revalidate every 24 hours
       });
       if (!response.ok) {
         throw new Error(`Error fetching user data: ${response.statusText}`);
@@ -68,6 +69,7 @@ export const api = {
             headers: {
               'x-api-key': apiKey,
             },
+            next: { revalidate: 86400 }, // Revalidate every 24 hours
           },
         );
         if (!response.ok) {
@@ -84,6 +86,7 @@ export const api = {
           headers: {
             'x-api-key': apiKey,
           },
+          next: { revalidate: 86400 }, // Revalidate every 24 hours
         });
         if (!response.ok) {
           throw new Error(`Error fetching user data: ${response.statusText}`);
@@ -98,6 +101,7 @@ export const api = {
         headers: {
           'x-api-key': apiKey,
         },
+        next: { revalidate: 86400 }, // Revalidate every 24 hours
       });
       if (!response.ok) {
         console.log('Response not ok:', apiKey);
@@ -110,6 +114,7 @@ export const api = {
         headers: {
           'x-api-key': apiKey,
         },
+        next: { revalidate: 86400 }, // Revalidate every 24 hours
       });
       if (!response.ok) {
         throw new Error(`Error fetching metric type: ${response.statusText}`);
@@ -128,6 +133,7 @@ export const api = {
           'x-api-key': apiKey,
         },
         body: JSON.stringify(data),
+        next: { revalidate: 86400 }, // Revalidate every 24 hours
       });
       if (!response.ok) {
         throw new Error(`Error posting metric type: ${response.statusText}`);

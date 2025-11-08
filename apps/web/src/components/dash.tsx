@@ -15,8 +15,6 @@ import {
   transformMeasurementData,
 } from '../lib/dashboard-helpers';
 
-export const revalidate = 1000 * 60 * 60 * 24;
-
 export const Dashboard = async () => {
   const userId = env.USER_ID;
   const { startDate, endDate } = getDateRange(DAYS_TO_FETCH);

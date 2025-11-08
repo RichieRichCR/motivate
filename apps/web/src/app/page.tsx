@@ -1,8 +1,7 @@
 import { Dashboard } from '../components/dash';
 
-// Force dynamic rendering - don't prerender at build time
-
-export const revalidate = 1000 * 60 * 60 * 24;
+// Revalidate every 24 hours
+export const revalidate = 86400; // 60 * 60 * 24 seconds
 
 export default async function Home() {
   return (
