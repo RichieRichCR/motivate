@@ -59,8 +59,6 @@ export function WeightChart({
     return date >= startDate;
   });
 
-  console.log('Filtered Data:', filteredData);
-
   return (
     <Card className="">
       <CardHeader className="flex items-center border-b sm:flex-row">

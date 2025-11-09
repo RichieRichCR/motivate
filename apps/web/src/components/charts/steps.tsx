@@ -55,8 +55,6 @@ export function StepsChart({
     return date >= startDate;
   });
 
-  console.log('Filtered Data:', filteredData);
-
   return (
     <Card className="">
       <CardHeader className="flex items-center space-y-0 border-b sm:flex-row">

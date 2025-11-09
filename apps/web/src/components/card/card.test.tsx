@@ -11,7 +11,7 @@ describe('ContentCard', () => {
     expect(screen.getByText('Weight')).toBeInTheDocument();
     expect(screen.getByText('150')).toBeInTheDocument();
     expect(screen.getByText('lbs')).toBeInTheDocument();
-    expect(screen.getByText(/as of/)).toBeInTheDocument();
+    expect(screen.getByText(/on \d{1,2} \w{3}/)).toBeInTheDocument(); // "on 15 Jan" format
   });
 
   it('should display dash when value is undefined', () => {
@@ -40,9 +40,9 @@ describe('ContentCard', () => {
       <ContentCard title="Weight" value="150" unit="lbs" date="2024-01-15" />,
     );
 
-    const dateElement = screen.getByText(/as of/);
+    const dateElement = screen.getByText(/on \d{1,2} \w{3}/);
     expect(dateElement).toBeInTheDocument();
-    expect(dateElement.textContent).toMatch(/\d{1,2}\/\d{1,2}\/\d{4}/);
+    expect(dateElement.textContent).toMatch(/on \d{1,2} \w{3}/); // "on 15 Jan" format
   });
 
   it('should render with correct title', () => {
@@ -79,7 +79,9 @@ describe('ContentCard', () => {
       <ContentCard title="Test" value="100" unit="units" date={undefined} />,
     );
 
-    // Check if card structure exists
-    expect(container.querySelector('.text-5xl')).toBeInTheDocument();
+    // Check if card structure exists - the value uses text-6xl class
+    const valueElement = container.querySelector('.text-6xl');
+    expect(valueElement).toBeTruthy();
+    expect(valueElement?.textContent).toContain('100');
   });
 });

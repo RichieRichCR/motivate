@@ -1,7 +1,7 @@
 'use client';
 
 import { useDataContext } from '@/app/provider/data';
-import { getMetricDate } from '@/lib/utils';
+import { getMetricDate, DAYS_IN_WEEK } from '@/lib/utils';
 import {
   Card,
   CardContent,
@@ -34,7 +34,7 @@ export const WeightSection = () => {
     .find((entry) => {
       const entryDate = new Date(entry.measuredAt);
       const oneWeekAgo = new Date();
-      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - DAYS_IN_WEEK);
       return entryDate <= oneWeekAgo;
     });
 
@@ -56,11 +56,6 @@ export const WeightSection = () => {
           new Date(startingDate).toDateString(),
       )?.value
     : null;
-
-  console.log('Starting Date:', startingDate);
-  console.log('Starting Value:', startingValue);
-  console.log('Last Week Weight:', lastWeekWeight);
-  console.log('Current Weight:', currentMetrics.currentWeight);
 
   const startingPoint = startingValue
     ? Number(startingValue)

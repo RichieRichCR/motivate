@@ -1,6 +1,5 @@
 import { api } from '../../lib/api-client';
 import { env } from '../../env';
-import { RadialChart } from '../charts/radial';
 import {
   createMetricIdMap,
   DAYS_TO_FETCH,
@@ -121,7 +120,7 @@ export const Dashboard = async () => {
     >
       <div className="w-full flex flex-col gap-8">
         <TitleSection className="w-full">
-          <h1 className="text-xl">Motivate RichieRich</h1>
+          <h1 className="text-xl">Dashboard</h1>
         </TitleSection>
         <TitleSection className="w-full">Weight Summary</TitleSection>
         <WeightSection />

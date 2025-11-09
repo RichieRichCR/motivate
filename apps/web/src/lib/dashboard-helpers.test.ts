@@ -28,8 +28,8 @@ describe('dashboard-helpers', () => {
       const metricIdMap = {};
       const resolver = createMetricIdResolver(metricIdMap);
       // Should use default from METRIC_CONFIG
-      expect(resolver('weight')).toBe(2);
-      expect(resolver('steps')).toBe(2);
+      expect(resolver('weight')).toBe(1); // weight default is 1
+      expect(resolver('steps')).toBe(2); // steps default is 2
     });
   });
 
@@ -51,6 +51,7 @@ describe('dashboard-helpers', () => {
         standing: 40,
         distance: 50,
         water: 60,
+        energy: 7, // energy uses default
       });
     });
 
@@ -70,6 +71,7 @@ describe('dashboard-helpers', () => {
       standing: 4,
       distance: 5,
       water: 6,
+      energy: 7,
     };
 
     const mockUserData: UserDataItem[] = [
@@ -108,6 +110,7 @@ describe('dashboard-helpers', () => {
       standing: 4,
       distance: 5,
       water: 6,
+      energy: 7,
     };
 
     const mockGoalsData: GoalDataItem[] = [
@@ -117,25 +120,25 @@ describe('dashboard-helpers', () => {
 
     it('should extract goal targets', () => {
       const result = extractGoalTargets(mockGoalsData, mockMetricIds);
-      expect(result.steps).toBe(12000);
-      expect(result.exercise).toBe(60);
+      expect(result.steps.value).toBe(12000);
+      expect(result.exercise.value).toBe(60);
     });
 
     it('should use default value for missing goals', () => {
       const result = extractGoalTargets(mockGoalsData, mockMetricIds);
-      expect(result.standing).toBe(10000);
+      expect(result.standing.value).toBe(10000);
     });
 
     it('should use custom default value', () => {
       const result = extractGoalTargets(mockGoalsData, mockMetricIds, 5000);
-      expect(result.standing).toBe(5000);
+      expect(result.standing.value).toBe(5000);
     });
 
     it('should handle empty goalsData', () => {
       const result = extractGoalTargets([], mockMetricIds);
-      expect(result.steps).toBe(10000);
-      expect(result.exercise).toBe(10000);
-      expect(result.standing).toBe(10000);
+      expect(result.steps.value).toBe(10000);
+      expect(result.exercise.value).toBe(10000);
+      expect(result.standing.value).toBe(10000);
     });
   });
 
@@ -217,7 +220,9 @@ describe('dashboard-helpers', () => {
   describe('createRadialChartData', () => {
     it('should create chart data with custom dataKey', () => {
       const result = createRadialChartData('7500', 'steps');
-      expect(result).toEqual([{ steps: 7500, fill: 'var(--color-chart-2)' }]);
+      expect(result).toEqual([
+        { steps: 7500, fill: 'var(--color-chart-2)', fillOpacity: 0.7 },
+      ]);
     });
 
     it('should handle undefined value as 0', () => {
@@ -238,20 +243,23 @@ describe('dashboard-helpers', () => {
 
   describe('buildRadialChartConfig', () => {
     it('should build complete chart config', () => {
-      const result = buildRadialChartConfig(
-        'steps',
-        'Steps',
-        'Steps taken today',
-        '7500',
-        10000,
-        'Steps',
-      );
-
-      expect(result).toEqual({
-        chartTitle: 'steps',
+      const result = buildRadialChartConfig({
+        dataKey: 'steps',
+        unit: 'steps',
         title: 'Steps',
         description: 'Steps taken today',
-        chartData: [{ steps: 7500, fill: 'var(--color-chart-2)' }],
+        value: '7500',
+        target: { value: 10000, startDate: undefined },
+        label: 'Steps',
+      });
+
+      expect(result).toEqual({
+        unit: 'steps',
+        title: 'Steps',
+        description: 'Steps taken today',
+        chartData: [
+          { steps: 7500, fill: 'var(--color-chart-2)', fillOpacity: 0.7 },
+        ],
         target: 10000,
         chartConfig: { steps: { label: 'Steps' } },
         dataKey: 'steps',
@@ -259,14 +267,15 @@ describe('dashboard-helpers', () => {
     });
 
     it('should handle undefined value', () => {
-      const result = buildRadialChartConfig(
-        'steps',
-        'Steps',
-        'Steps taken today',
-        undefined,
-        10000,
-        'Steps',
-      );
+      const result = buildRadialChartConfig({
+        dataKey: 'steps',
+        unit: 'steps',
+        title: 'Steps',
+        description: 'Steps taken today',
+        value: undefined,
+        target: { value: 10000, startDate: undefined },
+        label: 'Steps',
+      });
 
       expect(result.chartData[0].steps).toBe(0);
     });
@@ -280,9 +289,13 @@ describe('dashboard-helpers', () => {
     };
 
     const mockGoals = {
-      steps: 10000,
-      exercise: 60,
-      standing: 240,
+      weight: { value: 75, startDate: undefined },
+      steps: { value: 10000, startDate: undefined },
+      exercise: { value: 60, startDate: undefined },
+      standing: { value: 240, startDate: undefined },
+      water: { value: 2000, startDate: undefined },
+      distance: { value: 5000, startDate: undefined },
+      energy: { value: 500, startDate: undefined },
     };
 
     it('should build configs for all three charts', () => {

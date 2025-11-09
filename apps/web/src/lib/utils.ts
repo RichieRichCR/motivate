@@ -4,11 +4,18 @@ export const formatDate = (date: string): string => {
   return new Date(date).toLocaleDateString('en-GB');
 };
 
-// Constants
+// Time-related constants
 export const DAYS_TO_FETCH = 90;
+export const DAYS_IN_WEEK = 7;
+export const DAYS_IN_MONTH = 30;
 export const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+
+// Chart-related constants
 export const CHART_FILL_COLOR = 'var(--color-chart-2)';
 export const DEFAULT_TARGET = 10000;
+
+// Cache revalidation (in seconds)
+export const CACHE_REVALIDATE_TIME = 60; // 1 minute
 
 // Metric name constants and default IDs
 export const METRIC_CONFIG = {
@@ -89,4 +96,21 @@ export const getGoalTarget = (
 
 export const createRadialChartData = (value: string | undefined) => {
   return [{ value: Number(value ?? 0), fill: CHART_FILL_COLOR }];
+};
+
+/**
+ * Get the number of days to subtract based on the time range
+ * @param timeRange - The time range selector value (e.g., '7d', '30d', '90d')
+ * @returns Number of days to subtract from current date
+ */
+export const getDaysFromTimeRange = (timeRange: string): number => {
+  switch (timeRange) {
+    case '7d':
+      return DAYS_IN_WEEK;
+    case '30d':
+      return DAYS_IN_MONTH;
+    case '90d':
+    default:
+      return DAYS_TO_FETCH;
+  }
 };

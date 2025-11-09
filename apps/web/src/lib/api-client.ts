@@ -5,23 +5,69 @@ import {
   MetricSchemaResponse,
   CreateMetricResponse,
 } from '@repo/api/types';
+import { createLogger } from '@repo/logger';
+
+const logger = createLogger('api-client');
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787';
 const apiKey = process.env.API_KEY || '';
 
+/**
+ * Custom API Error class for better error handling
+ */
+class ApiError extends Error {
+  constructor(
+    message: string,
+    public statusCode: number,
+    public endpoint: string,
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
+/**
+ * Handles fetch responses and throws appropriate errors
+ */
+async function handleResponse<T>(
+  response: Response,
+  endpoint: string,
+): Promise<T> {
+  if (!response.ok) {
+    const errorMessage = `API Error: ${response.status} ${response.statusText}`;
+    logger.error({
+      msg: errorMessage,
+      endpoint,
+      status: response.status,
+      statusText: response.statusText,
+    });
+
+    throw new ApiError(errorMessage, response.status, endpoint);
+  }
+
+  try {
+    return await response.json();
+  } catch (error) {
+    logger.error({
+      msg: 'Failed to parse API response',
+      endpoint,
+      error,
+    });
+    throw new ApiError('Invalid response format from API', 500, endpoint);
+  }
+}
+
 export const api = {
   user: {
     async get(userId: string): Promise<UserDataResponse> {
-      const response = await fetch(`${apiUrl}/api/v1/user/${userId}`, {
+      const endpoint = `/api/v1/user/${userId}`;
+      const response = await fetch(`${apiUrl}${endpoint}`, {
         headers: {
           'x-api-key': apiKey,
         },
-        next: { revalidate: 60, tags: ['metric', `metric:${userId}`] }, // No cache - always fetch fresh
+        next: { revalidate: 60, tags: ['metric', `metric:${userId}`] },
       });
-      if (!response.ok) {
-        throw new Error(`Error fetching user data: ${response.statusText}`);
-      }
-      return response.json() satisfies Promise<UserDataResponse>;
+      return handleResponse<UserDataResponse>(response, endpoint);
     },
     async post(data: {
       userId: string;
@@ -30,7 +76,8 @@ export const api = {
       measuredAt: string;
       source: string;
     }): Promise<UserDataPostResponse> {
-      const response = await fetch(`${apiUrl}/api/v1/user`, {
+      const endpoint = '/api/v1/user';
+      const response = await fetch(`${apiUrl}${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,10 +85,7 @@ export const api = {
         },
         body: JSON.stringify(data),
       });
-      if (!response.ok) {
-        throw new Error(`Error fetching user data: ${response.statusText}`);
-      }
-      return response.json();
+      return handleResponse<UserDataPostResponse>(response, endpoint);
     },
     measurements: {
       async getById({
@@ -63,73 +107,60 @@ export const api = {
           params.append('endDate', endDate);
         }
 
-        const response = await fetch(
-          `${apiUrl}/api/v1/user/${userId}/measurements/${measurementId}?${params.toString()}`,
-          {
-            headers: {
-              'x-api-key': apiKey,
-            },
-            next: {
-              revalidate: 60, // No cache - always fetch fresh data
-              tags: ['metric', `metric:${userId}:${measurementId}`],
-            },
+        const endpoint = `/api/v1/user/${userId}/measurements/${measurementId}?${params.toString()}`;
+        const response = await fetch(`${apiUrl}${endpoint}`, {
+          headers: {
+            'x-api-key': apiKey,
           },
-        );
-        if (!response.ok) {
-          throw new Error(
-            `Error fetching user measurement: ${response.statusText}`,
-          );
-        }
-        return response.json() satisfies Promise<UserDataResponse>;
+          next: {
+            revalidate: 60,
+            tags: ['metric', `metric:${userId}:${measurementId}`],
+          },
+        });
+        return handleResponse<UserDataResponse>(response, endpoint);
       },
     },
     goals: {
       async get(userId: string): Promise<UserGoalsResponse> {
-        const response = await fetch(`${apiUrl}/api/v1/user/${userId}/goals`, {
+        const endpoint = `/api/v1/user/${userId}/goals`;
+        const response = await fetch(`${apiUrl}${endpoint}`, {
           headers: {
             'x-api-key': apiKey,
           },
-          next: { revalidate: 60, tags: ['metric', `metric:${userId}`] }, // No cache - always fetch fresh
+          next: { revalidate: 60, tags: ['metric', `metric:${userId}`] },
         });
-        if (!response.ok) {
-          throw new Error(`Error fetching user data: ${response.statusText}`);
-        }
-        return response.json() satisfies Promise<UserGoalsResponse>;
+        return handleResponse<UserGoalsResponse>(response, endpoint);
       },
     },
   },
   metrics: {
     async get(): Promise<MetricSchemaResponse> {
-      const response = await fetch(`${apiUrl}/api/v1/metrics`, {
+      const endpoint = '/api/v1/metrics';
+      const response = await fetch(`${apiUrl}${endpoint}`, {
         headers: {
           'x-api-key': apiKey,
         },
-        next: { revalidate: 60, tags: ['metric', `metric`] }, // Cache for 1 hour (metrics change rarely)
+        next: { revalidate: 60, tags: ['metric', `metric`] },
       });
-      if (!response.ok) {
-        console.log('Response not ok:', apiKey);
-        throw new Error(`Error fetching metric types: ${response.statusText}`);
-      }
-      return response.json() satisfies Promise<MetricSchemaResponse>;
+      return handleResponse<MetricSchemaResponse>(response, endpoint);
     },
     async getById(id: number): Promise<MetricSchemaResponse> {
-      const response = await fetch(`${apiUrl}/api/v1/metrics/${id}`, {
+      const endpoint = `/api/v1/metrics/${id}`;
+      const response = await fetch(`${apiUrl}${endpoint}`, {
         headers: {
           'x-api-key': apiKey,
         },
-        next: { revalidate: 60, tags: ['metric', `metric:${id}`] }, // Cache for 1 hour (metrics change rarely)
+        next: { revalidate: 60, tags: ['metric', `metric:${id}`] },
       });
-      if (!response.ok) {
-        throw new Error(`Error fetching metric type: ${response.statusText}`);
-      }
-      return response.json() satisfies Promise<MetricSchemaResponse>;
+      return handleResponse<MetricSchemaResponse>(response, endpoint);
     },
     async post(data: {
       name: string;
       unit: string;
       description: string;
     }): Promise<CreateMetricResponse> {
-      const response = await fetch(`${apiUrl}/api/v1/metrics`, {
+      const endpoint = '/api/v1/metrics';
+      const response = await fetch(`${apiUrl}${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -137,10 +168,7 @@ export const api = {
         },
         body: JSON.stringify(data),
       });
-      if (!response.ok) {
-        throw new Error(`Error posting metric type: ${response.statusText}`);
-      }
-      return response.json() satisfies Promise<CreateMetricResponse>;
+      return handleResponse<CreateMetricResponse>(response, endpoint);
     },
   },
 };
