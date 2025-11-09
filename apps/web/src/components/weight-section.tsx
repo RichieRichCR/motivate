@@ -89,7 +89,7 @@ export const WeightSection = () => {
         </CardHeader>
         <CardContent className="px-6 flex flex-col gap-6">
           <div className="flex flex-row flex-wrap justify-between gap-6">
-            <div className="grow shrink">
+            <div className="grow shrink w-full lg:w-auto">
               <div className="text-xs font-bold text-left  text-foreground/45 uppercase tracking-widest gap-0">
                 Current
               </div>
@@ -98,7 +98,7 @@ export const WeightSection = () => {
                 <div className="text-sm text-muted-foreground">Kgs</div>
               </div>
             </div>
-            <div className="grow shrink">
+            <div className="grow shrink w-full lg:w-auto">
               <div className="text-xs font-bold text-left  text-foreground/45 uppercase tracking-widest gap-0">
                 7 Day Trend
               </div>
@@ -123,7 +123,7 @@ export const WeightSection = () => {
               </div>
             </div>
 
-            <div className="grow shrink">
+            <div className="grow shrink w-full lg:w-auto">
               <div className="text-xs font-bold text-left  text-foreground/45 uppercase tracking-widest gap-0">
                 To Go
               </div>
@@ -146,7 +146,7 @@ export const WeightSection = () => {
                 <div className="text-sm text-muted-foreground">Kgs</div>
               </div>
             </div>
-            <div className="grow shrink">
+            <div className="grow shrink w-full lg:w-auto">
               <div className="text-xs font-bold text-left  text-foreground/45 uppercase tracking-widest gap-0">
                 Target
               </div>
