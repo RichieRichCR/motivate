@@ -61,10 +61,10 @@ export function RadialChart({
               gridType="circle"
               radialLines={false}
               stroke="none"
-              className="first:fill-muted last:fill-background"
+              className="first:fill-muted/50 last:fill-foreground/5"
               polarRadius={[146, 134]}
             />
-            <RadialBar dataKey={dataKey} background cornerRadius={10} />
+            <RadialBar dataKey={dataKey} cornerRadius={10} />
             <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
               <Label
                 content={({ viewBox }) => {
@@ -91,6 +91,17 @@ export function RadialChart({
                           className="fill-muted-foreground"
                         >
                           {unit}
+                        </tspan>
+                        <tspan
+                          x={viewBox.cx}
+                          y={(viewBox.cy || 0) + 52}
+                          className="fill-muted-foreground"
+                        >
+                          {(
+                            (Number(chartData[0][dataKey]) / target) *
+                            100
+                          ).toFixed(1)}
+                          % of {target.toLocaleString()}
                         </tspan>
                       </text>
                     );

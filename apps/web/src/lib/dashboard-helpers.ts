@@ -34,13 +34,13 @@ export interface DashboardMetrics {
 }
 
 export interface DashboardGoals {
-  weight: number;
-  steps: number;
-  exercise: number;
-  standing: number;
-  water: number;
-  distance: number;
-  energy: number;
+  weight: { value: number; startDate?: string | undefined };
+  steps: { value: number; startDate?: string | undefined };
+  exercise: { value: number; startDate?: string | undefined };
+  standing: { value: number; startDate?: string | undefined };
+  water: { value: number; startDate?: string | undefined };
+  distance: { value: number; startDate?: string | undefined };
+  energy: { value: number; startDate?: string | undefined };
 }
 
 export interface RadialChartConfig {
@@ -62,6 +62,7 @@ export interface UserDataItem {
 export interface GoalDataItem {
   metricTypeId: number;
   targetValue: string;
+  startDate?: string;
 }
 
 // ============================================================================
@@ -150,14 +151,60 @@ export const extractGoalTargets = (
     goalsData.map((goal) => [goal.metricTypeId, Number(goal.targetValue)]),
   );
 
+  const goalsMapStartingPoint = new Map(
+    goalsData.map((goal) => [goal.metricTypeId, Number(goal.startDate)]),
+  );
+
   return {
-    weight: goalsMap.get(metricIds.weight) ?? defaultTarget,
-    steps: goalsMap.get(metricIds.steps) ?? defaultTarget,
-    exercise: goalsMap.get(metricIds.exercise) ?? defaultTarget,
-    standing: goalsMap.get(metricIds.standing) ?? defaultTarget,
-    distance: goalsMap.get(metricIds.distance) ?? defaultTarget,
-    water: goalsMap.get(metricIds.water) ?? defaultTarget,
-    energy: goalsMap.get(metricIds.exercise) ?? defaultTarget,
+    weight: {
+      value: goalsMap.get(metricIds.weight) ?? defaultTarget,
+      startDate:
+        goalsMapStartingPoint.get(metricIds.weight) !== undefined
+          ? String(goalsMapStartingPoint.get(metricIds.weight))
+          : undefined,
+    },
+    steps: {
+      value: goalsMap.get(metricIds.steps) ?? defaultTarget,
+      startDate:
+        goalsMapStartingPoint.get(metricIds.steps) !== undefined
+          ? String(goalsMapStartingPoint.get(metricIds.steps))
+          : undefined,
+    },
+    exercise: {
+      value: goalsMap.get(metricIds.exercise) ?? defaultTarget,
+      startDate:
+        goalsMapStartingPoint.get(metricIds.exercise) !== undefined
+          ? String(goalsMapStartingPoint.get(metricIds.exercise))
+          : undefined,
+    },
+    standing: {
+      value: goalsMap.get(metricIds.standing) ?? defaultTarget,
+      startDate:
+        goalsMapStartingPoint.get(metricIds.standing) !== undefined
+          ? String(goalsMapStartingPoint.get(metricIds.standing))
+          : undefined,
+    },
+    distance: {
+      value: goalsMap.get(metricIds.distance) ?? defaultTarget,
+      startDate:
+        goalsMapStartingPoint.get(metricIds.distance) !== undefined
+          ? String(goalsMapStartingPoint.get(metricIds.distance))
+          : undefined,
+    },
+    water: {
+      value: goalsMap.get(metricIds.water) ?? defaultTarget,
+      startDate:
+        goalsMapStartingPoint.get(metricIds.water) !== undefined
+          ? String(goalsMapStartingPoint.get(metricIds.water))
+          : undefined,
+    },
+    energy: {
+      value: goalsMap.get(metricIds.exercise) ?? defaultTarget,
+      startDate:
+        goalsMapStartingPoint.get(metricIds.energy) !== undefined
+          ? String(goalsMapStartingPoint.get(metricIds.energy))
+          : undefined,
+    },
   };
 };
 
@@ -215,8 +262,9 @@ export const createRadialChartData = (
   value: string | undefined,
   dataKey: string,
   fillColor = 'var(--color-chart-2)',
+  fillOpacity = 0.7,
 ) => {
-  return [{ [dataKey]: Number(value ?? 0), fill: fillColor }];
+  return [{ [dataKey]: Number(value ?? 0), fill: fillColor, fillOpacity }];
 };
 
 /**
@@ -237,22 +285,18 @@ export const buildRadialChartConfig = ({
   title: string;
   description: string;
   value: string | undefined;
-  target: number;
+  target: { value: number; startDate?: string | undefined };
   label: string;
 }): RadialChartConfig => ({
   unit,
   title,
   description,
   chartData: createRadialChartData(value, dataKey),
-  target,
+  target: target.value,
   chartConfig: { [dataKey]: { label } },
   dataKey,
 });
 
-/**
- * Builds configurations for all radial charts
- * Reduces repetition in the main component
- */
 export const buildAllRadialChartConfigs = (
   currentMetrics: DashboardMetrics,
   goalTargets: DashboardGoals,
