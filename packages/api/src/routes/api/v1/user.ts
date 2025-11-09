@@ -330,13 +330,6 @@ app
         const startDate = c.req.query('startDate');
         const endDate = c.req.query('endDate');
 
-        console.log('API Query params:', {
-          userId,
-          metricTypeId,
-          startDate,
-          endDate,
-        });
-
         if (!userId) {
           return c.json({ error: 'Bad Request - Missing user ID' }, 400);
         }
@@ -364,8 +357,6 @@ app
           orderBy: (measurement, { asc }) => [asc(measurement.measuredAt)],
           with: { metricType: true },
         });
-
-        console.log('Database Measurements:', databaseMeasurements);
 
         // Group measurements by date and keep only the latest measurement per date
         const measurementsByDate = new Map<
@@ -397,11 +388,6 @@ app
             source: m.source,
             notes: m.notes,
           }));
-
-        console.log(
-          'Aggregated measurements (one per date):',
-          measurements.length,
-        );
 
         const payload = MeasurementsSchema.parse({
           status: 'ok',

@@ -55,7 +55,7 @@ export const useWeightCalculations = ({
         ? Number((current - lastWeekWeight).toFixed(2))
         : null;
 
-    // Find starting weight for progress calculation
+    // Find starting weight for progress calculation (weight when goal was set)
     const startingValue = startDate
       ? weightHistory.find(
           (entry) =>
@@ -64,13 +64,12 @@ export const useWeightCalculations = ({
         )?.value
       : null;
 
-    const startingPoint = startingValue
-      ? Number(startingValue)
-      : (lastWeekWeight ?? current);
+    // Starting point should only be the weight when the goal was set, not a fallback
+    const startingPoint = startingValue ? Number(startingValue) : null;
 
-    // Calculate progress percentage
+    // Calculate progress percentage - only if we have a valid starting point from goal start date
     const progress =
-      startingPoint && targetWeight
+      startingPoint !== null && targetWeight && startingPoint !== targetWeight
         ? Math.min(
             Math.max(
               Math.round(
@@ -91,7 +90,7 @@ export const useWeightCalculations = ({
       sevenDayTrend,
       progress,
       isAboveTarget: weightToGo >= 0,
-      isTrendingDown: sevenDayTrend !== null && sevenDayTrend >= 0,
+      isTrendingDown: sevenDayTrend !== null && sevenDayTrend <= 0,
     };
   }, [currentWeight, targetWeight, weightHistory, startDate]);
 };

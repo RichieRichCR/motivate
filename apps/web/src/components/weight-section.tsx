@@ -34,6 +34,14 @@ export const WeightSection = () => {
       startDate: goalTargets.weight.startDate,
     });
 
+  console.log('WeightSection render', {
+    weightToGo,
+    sevenDayTrend,
+    progress,
+    isAboveTarget,
+    isTrendingDown,
+  });
+
   return (
     <div className="grid grid-cols-1 gap-8">
       <Card>
@@ -50,6 +58,7 @@ export const WeightSection = () => {
               label="Current"
               value={currentMetrics.currentWeight ?? '—'}
             />
+            <WeightMetric label="Target" value={goalTargets.weight.value} />
             <WeightMetric
               label="To Go"
               value={weightToGo}
@@ -66,7 +75,6 @@ export const WeightSection = () => {
               trendValue={sevenDayTrend}
               isTrendingDown={isTrendingDown}
             />
-            <WeightMetric label="Target" value={goalTargets.weight.value} />
           </div>
 
           {/* Progress Bar */}

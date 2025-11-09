@@ -70,11 +70,8 @@ app
     async (c: Context) => {
       try {
         const metrics = await db.select().from(metricTypes);
-        console.log('Fetched Metric Types:', metrics);
 
         const parsedMetrics = MetricTypeSchema.parse({ data: metrics });
-
-        console.log('Parsed Metric Types:', parsedMetrics);
 
         return c.json(parsedMetrics);
       } catch (error) {
@@ -130,8 +127,6 @@ app
           .select()
           .from(metricTypes)
           .where(eq(metricTypes.id, Number(c.req.param('id'))));
-
-        console.log('Fetched Metric Types:', metric);
 
         const parsedMetric = MetricTypeSchema.parse({ data: metric });
 
