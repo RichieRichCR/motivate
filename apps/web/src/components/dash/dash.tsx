@@ -122,8 +122,11 @@ export const Dashboard = async () => {
         <TitleSection className="w-full">
           <h1 className="text-xl">Dashboard</h1>
         </TitleSection>
+
         <TitleSection className="w-full">Weight Summary</TitleSection>
+
         <WeightSection />
+
         <TitleSection>Daily Activity</TitleSection>
 
         <RadialChartsSection />

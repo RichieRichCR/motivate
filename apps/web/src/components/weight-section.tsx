@@ -88,7 +88,7 @@ export const WeightSection = () => {
           </div>
         </CardHeader>
         <CardContent className="px-6 flex flex-col gap-6">
-          <div className="flex flex-row justify-between gap-6">
+          <div className="flex flex-row flex-wrap justify-between gap-6">
             <div className="grow shrink">
               <div className="text-xs font-bold text-left  text-foreground/45 uppercase tracking-widest gap-0">
                 Current
