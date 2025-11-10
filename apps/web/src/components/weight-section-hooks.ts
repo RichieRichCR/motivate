@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { DAYS_IN_WEEK } from '@/lib/utils';
+import { DAYS_IN_WEEK, getUTCDateDaysAgo, isSameUTCDate } from '@/lib/utils';
 
 interface WeightHistoryEntry {
   measuredAt: Date;
@@ -33,7 +33,8 @@ export const useWeightCalculations = ({
   return useMemo(() => {
     const current = Number(currentWeight ?? 0);
 
-    // Find weight from 7 days ago
+    // Find weight from 7 days ago (using UTC to avoid timezone issues)
+    const oneWeekAgoUTC = getUTCDateDaysAgo(DAYS_IN_WEEK);
     const lastWeekEntry = weightHistory
       .slice()
       .sort(
@@ -42,9 +43,7 @@ export const useWeightCalculations = ({
       )
       .find((entry) => {
         const entryDate = new Date(entry.measuredAt);
-        const oneWeekAgo = new Date();
-        oneWeekAgo.setDate(oneWeekAgo.getDate() - DAYS_IN_WEEK);
-        return entryDate <= oneWeekAgo;
+        return entryDate <= oneWeekAgoUTC;
       });
 
     const lastWeekWeight = lastWeekEntry ? Number(lastWeekEntry.value) : null;
@@ -56,11 +55,10 @@ export const useWeightCalculations = ({
         : null;
 
     // Find starting weight for progress calculation (weight when goal was set)
+    // Using UTC date comparison to avoid timezone issues
     const startingValue = startDate
-      ? weightHistory.find(
-          (entry) =>
-            new Date(entry.measuredAt).toDateString() ===
-            new Date(startDate).toDateString(),
+      ? weightHistory.find((entry) =>
+          isSameUTCDate(new Date(entry.measuredAt), new Date(startDate)),
         )?.value
       : null;
 

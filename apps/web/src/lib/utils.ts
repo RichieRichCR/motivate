@@ -33,8 +33,20 @@ export const METRIC_CONFIG = {
 // Helper Functions
 export const getDateRange = (daysBack: number) => {
   const now = new Date();
-  const endDate = now.toISOString().split('T')[0];
-  const startDate = new Date(now.getTime() - daysBack * MILLISECONDS_PER_DAY)
+  // Use UTC methods to ensure consistent timezone handling
+  const endDate = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+  )
+    .toISOString()
+    .split('T')[0];
+
+  const startDate = new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate() - daysBack,
+    ),
+  )
     .toISOString()
     .split('T')[0];
 
@@ -43,6 +55,44 @@ export const getDateRange = (daysBack: number) => {
 
 export const formatDateString = (date: string | Date): string => {
   return new Date(date).toISOString().split('T')[0];
+};
+
+/**
+ * Get a UTC date string from a Date object (YYYY-MM-DD format)
+ * @param date - The date to format
+ * @returns Date string in UTC timezone
+ */
+export const getUTCDateString = (date: Date): string => {
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+/**
+ * Compare two dates by their UTC date strings (ignoring time)
+ * @param date1 - First date to compare
+ * @param date2 - Second date to compare
+ * @returns true if dates are the same day in UTC
+ */
+export const isSameUTCDate = (date1: Date, date2: Date): boolean => {
+  return getUTCDateString(date1) === getUTCDateString(date2);
+};
+
+/**
+ * Get a date N days ago in UTC
+ * @param daysAgo - Number of days to go back
+ * @returns Date object set to N days ago at UTC midnight
+ */
+export const getUTCDateDaysAgo = (daysAgo: number): Date => {
+  const now = new Date();
+  return new Date(
+    Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate() - daysAgo,
+    ),
+  );
 };
 
 export const transformMeasurementData = (

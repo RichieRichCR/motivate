@@ -67,15 +67,25 @@ export function ChartArea({
 }) {
   const [timeRange, setTimeRange] = React.useState(defaultTimeRange);
 
-  const filteredData = chartData.filter((item) => {
-    const date = new Date(item[dateKey] as string);
-    const referenceDate = new Date();
+  const filteredData = React.useMemo(() => {
     const selectedRange = timeRangeOptions.find((r) => r.value === timeRange);
     const daysToSubtract = selectedRange?.days || 90;
-    const startDate = new Date(referenceDate);
-    startDate.setDate(startDate.getDate() - daysToSubtract);
-    return date >= startDate;
-  });
+
+    // Use UTC date for consistent filtering regardless of server timezone
+    const now = new Date();
+    const startDate = new Date(
+      Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate() - daysToSubtract,
+      ),
+    );
+
+    return chartData.filter((item) => {
+      const date = new Date(item[dateKey] as string);
+      return date >= startDate;
+    });
+  }, [chartData, timeRange, timeRangeOptions, dateKey]);
 
   return (
     <Card className="">
