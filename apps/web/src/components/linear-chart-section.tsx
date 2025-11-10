@@ -1,6 +1,6 @@
 'use client';
 
-import { useDataContext } from '@/app/provider/data';
+import { useDataContext } from '@/app/provider/data-provider';
 import { ChartArea } from './charts/area-chart';
 import { useMemo } from 'react';
 

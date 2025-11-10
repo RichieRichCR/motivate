@@ -13,7 +13,7 @@ import {
   transformMeasurementData,
 } from '../../lib/dashboard-helpers';
 import { TitleSection } from '../title/title-section';
-import { DataProvider } from '@/app/provider/data';
+import { DataProvider } from '@/app/provider/data-provider';
 import { WeightSection } from '../weight-section';
 import { RadialChartsSection } from '../radial-charts-section';
 import { LinearChartSection } from '../linear-chart-section';
