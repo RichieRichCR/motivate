@@ -29,7 +29,7 @@ export const NavBar = () => {
       <div ref={sentinelRef} className="h-0" />
       <nav
         ref={navRef}
-        className="sticky top-0 w-full h-16 bg-background/50 backdrop-blur-sm flex items-center px-4 z-20 rounded-2xl shadow-md transition-all duration-200"
+        className="sticky top-0 w-full h-16 bg-foreground/5 backdrop-blur-sm flex items-center px-4 z-20 rounded-2xl shadow-md transition-all duration-200"
       >
         <h1 className="text-sm tracking-widest uppercase font-black">
           Motivate Richie Rich
