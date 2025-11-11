@@ -83,15 +83,40 @@ function RollingDigit({
       <AnimatePresence mode="popLayout">
         <motion.span
           key={currentDigit}
-          initial={{ y: '100%' }}
-          animate={{ y: '0%' }}
-          exit={{ y: '-100%' }}
+          initial={{
+            y: '100%',
+            x: '10%',
+            filter: 'blur(8px) brightness(0.7)',
+            opacity: 0,
+            scale: 0.8,
+            rotate: -5,
+            rotateX: 45,
+          }}
+          animate={{
+            y: '0%',
+            x: '0%',
+            filter: 'blur(0px) brightness(1.2)',
+            opacity: 1,
+            scale: 1,
+            rotate: 0,
+            rotateX: 0,
+          }}
+          exit={{
+            y: '-100%',
+            x: '10%',
+            filter: 'blur(4px) brightness(0.7)',
+            opacity: 0,
+            scale: 0.8,
+            rotate: 5,
+            rotateX: -45,
+          }}
           transition={{
             type: 'spring',
             stiffness: 300,
             damping: 30,
             mass: 0.8,
           }}
+          style={{ transformPerspective: 800 }}
           className={`flex items-center justify-center absolute inset-0 ${
             isDecimal ? 'p-0' : ''
           }`}
