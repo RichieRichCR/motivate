@@ -66,6 +66,7 @@ function RollingDigit({
     return () => clearTimeout(timeout);
   }, [targetDigit, position]);
 
+  const isOne = targetDigit === '1';
   const isDecimal = currentDigit === '.';
   const isNegative = currentDigit === '-';
 
@@ -76,6 +77,7 @@ function RollingDigit({
         { 'w-5 bg-transparent': isDecimal },
         { 'w-10 ': isNegative },
         { 'w-16': !isDecimal && !isNegative },
+        { 'w-14': isOne },
       )}
     >
       <AnimatePresence mode="popLayout">
@@ -86,9 +88,9 @@ function RollingDigit({
           exit={{ y: '-100%' }}
           transition={{
             type: 'spring',
-            stiffness: 200,
-            damping: 25,
-            mass: 0.5,
+            stiffness: 300,
+            damping: 30,
+            mass: 0.8,
           }}
           className={`flex items-center justify-center absolute inset-0 ${
             isDecimal ? 'p-0' : ''
