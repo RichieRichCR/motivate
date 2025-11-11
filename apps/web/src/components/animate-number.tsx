@@ -74,10 +74,10 @@ function RollingDigit({
     <span
       className={cn(
         `inline-block relative overflow-hidden align-baseline h-24`,
-        { 'w-5 bg-transparent': isDecimal },
-        { 'w-10 ': isNegative },
-        { 'w-16': !isDecimal && !isNegative },
-        { 'w-14': isOne },
+        { 'w-3 2xl:w-5 bg-transparent': isDecimal },
+        { 'w-6 2xl:w-10 ': isNegative },
+        { 'w-10 2xl:w-16': !isDecimal && !isNegative && !isOne },
+        { 'w-8 2xl:w-14': isOne },
       )}
     >
       <AnimatePresence mode="popLayout">

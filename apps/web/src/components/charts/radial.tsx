@@ -60,15 +60,15 @@ export function RadialChart({
             endAngle={
               isVisible ? (Number(chartData[0][dataKey]) / target) * 360 : 0
             }
-            innerRadius={140}
-            outerRadius={160}
+            innerRadius={130}
+            outerRadius={170}
           >
             <PolarGrid
               gridType="circle"
               radialLines={false}
               stroke="none"
               className="first:fill-muted/50 last:fill-foreground/5"
-              polarRadius={[146, 134]}
+              polarRadius={[116, 116]}
             />
             <RadialBar
               dataKey={dataKey}
