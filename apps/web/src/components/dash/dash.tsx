@@ -122,7 +122,7 @@ export const Dashboard = async () => {
 
         <RadialChartsSection />
 
-        <TitleSection>Activity</TitleSection>
+        <TitleSection>Long Term Activity</TitleSection>
 
         <LinearChartSection />
       </div>
