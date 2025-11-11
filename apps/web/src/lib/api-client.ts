@@ -26,34 +26,6 @@ class ApiError extends Error {
   }
 }
 
-async function handleResponse<T>(
-  response: Response,
-  endpoint: string,
-): Promise<T> {
-  if (!response.ok) {
-    const errorMessage = `API Error: ${response.status} ${response.statusText}`;
-    logger.error({
-      msg: errorMessage,
-      endpoint,
-      status: response.status,
-      statusText: response.statusText,
-    });
-
-    throw new ApiError(errorMessage, response.status, endpoint);
-  }
-
-  try {
-    return await response.json();
-  } catch (error) {
-    logger.error({
-      msg: 'Failed to parse API response',
-      endpoint,
-      error,
-    });
-    throw new ApiError('Invalid response format from API', 500, endpoint);
-  }
-}
-
 export const endpoints = {
   user: (userId?: string) => `${apiUrl}/api/v1/user/${userId}`,
   userGoals: (userId: string) => `${apiUrl}/api/v1/user/${userId}/goals`,
@@ -81,7 +53,10 @@ export const endpoints = {
   metricById: (id: number) => `${apiUrl}/api/v1/metrics/${id}`,
 };
 
-type FetcherClient = <T>(endpoint: string, options?: RequestInit) => Promise<T>;
+type FetcherClient = <T>(
+  endpoint: string,
+  options?: RequestInit,
+) => Promise<T | never>;
 
 export const fetcher: FetcherClient = async <T>(
   url: string,
@@ -97,7 +72,28 @@ export const fetcher: FetcherClient = async <T>(
     },
   });
 
-  return handleResponse<UserDataPostResponse>(response, url) as Promise<T>;
+  if (!response.ok) {
+    const errorMessage = `API Error: ${response.status} ${response.statusText}`;
+    logger.error({
+      msg: errorMessage,
+      url: url,
+      status: response.status,
+      statusText: response.statusText,
+    });
+
+    throw new ApiError(errorMessage, response.status, url);
+  }
+
+  try {
+    return (await response.json()) as Promise<T>;
+  } catch (error) {
+    logger.error({
+      msg: 'Failed to parse API response',
+      url: url,
+      error,
+    });
+    throw new ApiError('Invalid response format from API', 500, url);
+  }
 };
 
 export const api = {
