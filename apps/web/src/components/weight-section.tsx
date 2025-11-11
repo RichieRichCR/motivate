@@ -53,7 +53,7 @@ export const WeightSection = () => {
         </CardHeader>
 
         <CardContent className="px-6 flex flex-col gap-6">
-          <div className="flex flex-row flex-wrap justify-between gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-4 justify-between gap-6">
             <WeightMetric
               label="Current"
               value={currentMetrics.currentWeight ?? '—'}

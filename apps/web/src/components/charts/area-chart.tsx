@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@repo/ui';
+import { useAnimateOnView } from '@/hooks/use-animate-on-view';
 
 export const description = 'An interactive area chart';
 
@@ -66,6 +67,7 @@ export function ChartArea({
   showTimeRange?: boolean;
 }) {
   const [timeRange, setTimeRange] = React.useState(defaultTimeRange);
+  const { isVisible, elementRef } = useAnimateOnView();
 
   const filteredData = React.useMemo(() => {
     const selectedRange = timeRangeOptions.find((r) => r.value === timeRange);
@@ -88,7 +90,7 @@ export function ChartArea({
   }, [chartData, timeRange, timeRangeOptions, dateKey]);
 
   return (
-    <Card className="">
+    <Card ref={elementRef} className="">
       <CardHeader className="flex items-center space-y-0 border-b sm:flex-row">
         <div className="grid flex-1 gap-1">
           <CardTitle>{title}</CardTitle>
@@ -182,6 +184,7 @@ export function ChartArea({
                 fill={`url(#fill-${s.dataKey})`}
                 stroke={s.color}
                 stackId={s.stackId}
+                isAnimationActive={isVisible}
               />
             ))}
             {showLegend && <ChartLegend content={<ChartLegendContent />} />}

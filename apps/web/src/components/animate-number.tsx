@@ -1,0 +1,131 @@
+'use client';
+
+import { cn } from '@repo/ui';
+import { motion, AnimatePresence } from 'motion/react';
+import { useEffect, useState } from 'react';
+
+function RollingDigit({
+  targetDigit,
+  position,
+}: {
+  targetDigit: string;
+  position: number;
+}) {
+  const [currentDigit, setCurrentDigit] = useState('0');
+
+  useEffect(() => {
+    if (targetDigit === '.') {
+      setCurrentDigit('.');
+      return;
+    }
+
+    const target = parseInt(targetDigit);
+
+    if (isNaN(target)) {
+      setCurrentDigit(targetDigit);
+      return;
+    }
+
+    // If target is 0, just set it without animation
+    if (target === 0) {
+      setCurrentDigit('0');
+      return;
+    }
+
+    let current = 0;
+    setCurrentDigit('0');
+
+    // Delay based on position (rightmost digits start first)
+    const startDelay = position * 150;
+
+    const timeout = setTimeout(() => {
+      // Easing function - starts fast, slows down
+      const getStepDuration = (step: number, total: number) => {
+        const progress = step / total;
+        // Ease out quadratic
+        const easeProgress = 1 - (1 - progress) * (1 - progress);
+        // Start at 80ms, end at 250ms
+        return 80 + easeProgress * 170;
+      };
+
+      let stepCount = 0;
+      const roll = () => {
+        if (current < target) {
+          current++;
+          setCurrentDigit(current.toString());
+          stepCount++;
+
+          const nextDelay = getStepDuration(stepCount, target);
+          setTimeout(roll, nextDelay);
+        }
+      };
+
+      roll();
+    }, startDelay);
+
+    return () => clearTimeout(timeout);
+  }, [targetDigit, position]);
+
+  const isDecimal = currentDigit === '.';
+  const isNegative = currentDigit === '-';
+
+  return (
+    <span
+      className={cn(
+        `inline-block relative overflow-hidden align-baseline h-24`,
+        { 'w-5 bg-transparent': isDecimal },
+        { 'w-10 ': isNegative },
+        { 'w-16': !isDecimal && !isNegative },
+      )}
+    >
+      <AnimatePresence mode="popLayout">
+        <motion.span
+          key={currentDigit}
+          initial={{ y: '100%' }}
+          animate={{ y: '0%' }}
+          exit={{ y: '-100%' }}
+          transition={{
+            type: 'spring',
+            stiffness: 200,
+            damping: 25,
+            mass: 0.5,
+          }}
+          className={`flex items-center justify-center absolute inset-0 ${
+            isDecimal ? 'p-0' : ''
+          }`}
+        >
+          {currentDigit}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
+
+export default function AnimateNumber({
+  value,
+  className,
+}: {
+  value: number;
+  className: string;
+}) {
+  // Format the target value
+  const rounded = Math.round(value * 100) / 100;
+  const formatted =
+    rounded === Math.floor(rounded)
+      ? Math.floor(rounded).toFixed(0)
+      : rounded.toFixed(2).replace(/\.?0+$/, '');
+
+  const chars = formatted.split('');
+
+  return (
+    <span className={className} style={{ display: 'inline-flex' }}>
+      {chars.map((char, i) => (
+        <RollingDigit
+          key={`pos-${i}`}
+          targetDigit={char}
+          position={chars.length - i - 1}
+        />
+      ))}
+    </span>
+  );
+}
