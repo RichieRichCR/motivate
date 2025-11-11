@@ -199,7 +199,7 @@ export const extractGoalTargets = (
           : undefined,
     },
     energy: {
-      value: goalsMap.get(metricIds.exercise) ?? defaultTarget,
+      value: goalsMap.get(metricIds.energy) ?? defaultTarget,
       startDate:
         goalsMapStartingPoint.get(metricIds.energy) !== undefined
           ? String(goalsMapStartingPoint.get(metricIds.energy))

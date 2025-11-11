@@ -68,7 +68,7 @@ export const WeightSection = () => {
               label="7 Day Trend"
               value={sevenDayTrend ?? '—'}
               className={cn(
-                'items-end',
+                'items-baseline-last',
                 isTrendingDown ? 'text-green-600' : 'text-red-600',
               )}
               showTrend

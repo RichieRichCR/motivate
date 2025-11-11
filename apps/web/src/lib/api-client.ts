@@ -26,9 +26,6 @@ class ApiError extends Error {
   }
 }
 
-/**
- * Handles fetch responses and throws appropriate errors
- */
 async function handleResponse<T>(
   response: Response,
   endpoint: string,
@@ -57,17 +54,56 @@ async function handleResponse<T>(
   }
 }
 
+export const endpoints = {
+  user: (userId?: string) => `${apiUrl}/api/v1/user/${userId}`,
+  userGoals: (userId: string) => `${apiUrl}/api/v1/user/${userId}/goals`,
+  userMeasurements: ({
+    userId,
+    measurementId,
+    startDate,
+    endDate,
+  }: {
+    userId: string;
+    measurementId: number;
+    startDate?: string;
+    endDate?: string;
+  }) => {
+    const params: URLSearchParams = new URLSearchParams();
+    if (startDate) {
+      params.append('startDate', startDate);
+    }
+    if (endDate) {
+      params.append('endDate', endDate);
+    }
+    return `${apiUrl}/api/v1/user/${userId}/measurements/${measurementId}?${params.toString()}`;
+  },
+  metrics: `${apiUrl}/api/v1/metrics`,
+  metricById: (id: number) => `${apiUrl}/api/v1/metrics/${id}`,
+};
+
+type FetcherClient = <T>(endpoint: string, options?: RequestInit) => Promise<T>;
+
+export const fetcher: FetcherClient = async <T>(
+  url: string,
+  options?: RequestInit,
+) => {
+  console.log('Fetching URL:', url);
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      ...options?.headers,
+    },
+  });
+
+  return handleResponse<UserDataPostResponse>(response, url) as Promise<T>;
+};
+
 export const api = {
   user: {
     async get(userId: string): Promise<UserDataResponse> {
-      const endpoint = `/api/v1/user/${userId}`;
-      const response = await fetch(`${apiUrl}${endpoint}`, {
-        headers: {
-          'x-api-key': apiKey,
-        },
-        next: { revalidate: 60, tags: ['metric', `metric:${userId}`] },
-      });
-      return handleResponse<UserDataResponse>(response, endpoint);
+      return fetcher<UserDataResponse>(endpoints.user(userId));
     },
     async post(data: {
       userId: string;
@@ -76,16 +112,11 @@ export const api = {
       measuredAt: string;
       source: string;
     }): Promise<UserDataPostResponse> {
-      const endpoint = '/api/v1/user';
-      const response = await fetch(`${apiUrl}${endpoint}`, {
+      const opts = {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-        },
         body: JSON.stringify(data),
-      });
-      return handleResponse<UserDataPostResponse>(response, endpoint);
+      };
+      return fetcher<UserDataPostResponse>(endpoints.user(), opts);
     },
     measurements: {
       async getById({
@@ -99,76 +130,55 @@ export const api = {
         startDate?: string;
         endDate?: string;
       }): Promise<UserDataResponse> {
-        const params: URLSearchParams = new URLSearchParams();
-        if (startDate) {
-          params.append('startDate', startDate);
-        }
-        if (endDate) {
-          params.append('endDate', endDate);
-        }
-
-        const endpoint = `/api/v1/user/${userId}/measurements/${measurementId}?${params.toString()}`;
-        const response = await fetch(`${apiUrl}${endpoint}`, {
-          headers: {
-            'x-api-key': apiKey,
-          },
+        const opts = {
           next: {
             revalidate: 60,
             tags: ['metric', `metric:${userId}:${measurementId}`],
           },
-        });
-        return handleResponse<UserDataResponse>(response, endpoint);
+        };
+        return fetcher<UserDataResponse>(
+          endpoints.userMeasurements({
+            userId,
+            measurementId,
+            startDate,
+            endDate,
+          }),
+          opts,
+        );
       },
     },
     goals: {
       async get(userId: string): Promise<UserGoalsResponse> {
-        const endpoint = `/api/v1/user/${userId}/goals`;
-        const response = await fetch(`${apiUrl}${endpoint}`, {
-          headers: {
-            'x-api-key': apiKey,
-          },
+        const opts = {
           next: { revalidate: 60, tags: ['metric', `metric:${userId}`] },
-        });
-        return handleResponse<UserGoalsResponse>(response, endpoint);
+        };
+        return fetcher<UserGoalsResponse>(endpoints.userGoals(userId), opts);
       },
     },
   },
   metrics: {
     async get(): Promise<MetricSchemaResponse> {
-      const endpoint = '/api/v1/metrics';
-      const response = await fetch(`${apiUrl}${endpoint}`, {
-        headers: {
-          'x-api-key': apiKey,
-        },
+      const opts = {
         next: { revalidate: 60, tags: ['metric', `metric`] },
-      });
-      return handleResponse<MetricSchemaResponse>(response, endpoint);
+      };
+      return fetcher<MetricSchemaResponse>(endpoints.metrics, opts);
     },
     async getById(id: number): Promise<MetricSchemaResponse> {
-      const endpoint = `/api/v1/metrics/${id}`;
-      const response = await fetch(`${apiUrl}${endpoint}`, {
-        headers: {
-          'x-api-key': apiKey,
-        },
+      const opts = {
         next: { revalidate: 60, tags: ['metric', `metric:${id}`] },
-      });
-      return handleResponse<MetricSchemaResponse>(response, endpoint);
+      };
+      return fetcher<MetricSchemaResponse>(endpoints.metricById(id), opts);
     },
     async post(data: {
       name: string;
       unit: string;
       description: string;
     }): Promise<CreateMetricResponse> {
-      const endpoint = '/api/v1/metrics';
-      const response = await fetch(`${apiUrl}${endpoint}`, {
+      const opts = {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-        },
         body: JSON.stringify(data),
-      });
-      return handleResponse<CreateMetricResponse>(response, endpoint);
+      };
+      return fetcher<CreateMetricResponse>(endpoints.metrics, opts);
     },
   },
 };
