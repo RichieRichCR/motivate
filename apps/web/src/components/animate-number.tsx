@@ -73,7 +73,7 @@ function RollingDigit({
   return (
     <span
       className={cn(
-        `inline-block relative overflow-hidden align-baseline h-24`,
+        `inline-block relative overflow-hidden align-baseline h-12 2xl:h-20`,
         { 'w-3 2xl:w-5 bg-transparent': isDecimal },
         { 'w-6 2xl:w-10 ': isNegative },
         { 'w-10 2xl:w-16': !isDecimal && !isNegative && !isOne },
