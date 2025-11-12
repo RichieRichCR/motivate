@@ -8,8 +8,8 @@ import { useMemo } from 'react';
 const COMMON_CHART_PROPS = {
   defaultTimeRange: '7d' as const,
   dateKey: 'date' as const,
-  showLegend: false,
-  showTimeRange: false,
+  showLegend: true,
+  showTimeRange: true,
 };
 
 export const LinearChartSection = () => {
@@ -24,7 +24,7 @@ export const LinearChartSection = () => {
         title: 'Daily Weight',
         description: 'Weight changes over time.',
         color: 'var(--color-chart-3)',
-        label: 'Weight',
+        label: 'kg',
         configKey: 'weight',
       },
       {
@@ -32,7 +32,7 @@ export const LinearChartSection = () => {
         title: 'Daily Steps',
         description: 'Step count changes over time.',
         color: 'var(--color-chart-3)',
-        label: 'Steps',
+        label: 'steps',
         configKey: 'steps',
       },
       {
@@ -40,7 +40,7 @@ export const LinearChartSection = () => {
         title: 'Daily Active Energy',
         description: 'Active energy expenditure over time.',
         color: 'var(--color-chart-3)',
-        label: 'Energy',
+        label: 'kcal',
         configKey: 'energy',
       },
       {
@@ -48,7 +48,7 @@ export const LinearChartSection = () => {
         title: 'Daily Exercise Minutes',
         description: 'Daily exercise minutes over time.',
         color: 'var(--color-chart-3)',
-        label: 'Exercise',
+        label: 'min',
         configKey: 'exercise',
       },
       {
@@ -56,7 +56,7 @@ export const LinearChartSection = () => {
         title: 'Daily Distance',
         description: 'Daily distance covered over time.',
         color: 'var(--color-chart-3)',
-        label: 'Distance',
+        label: 'km',
         configKey: 'distance',
       },
       {
@@ -64,7 +64,7 @@ export const LinearChartSection = () => {
         title: 'Daily Water Intake',
         description: 'Daily water intake over time.',
         color: 'var(--color-chart-3)',
-        label: 'Water',
+        label: 'ml',
         configKey: 'water',
       },
     ],

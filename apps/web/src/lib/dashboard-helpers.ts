@@ -391,7 +391,7 @@ export const buildAllRadialChartConfigs = (
   return {
     steps: buildRadialChartConfig({
       dataKey: 'steps',
-      unit: 'Steps',
+      unit: 'steps',
       title: 'Steps',
       description: `Steps taken on ${dateMeasured}`,
       value: currentMetrics.currentSteps,
@@ -401,7 +401,7 @@ export const buildAllRadialChartConfigs = (
 
     standing: buildRadialChartConfig({
       dataKey: 'standing',
-      unit: 'Minutes',
+      unit: 'mins',
       title: 'Standing',
       description: `Minutes standing on ${dateMeasured}`,
       value: currentMetrics.currentStanding,
@@ -411,7 +411,7 @@ export const buildAllRadialChartConfigs = (
 
     exercise: buildRadialChartConfig({
       dataKey: 'exercise',
-      unit: 'Minutes',
+      unit: 'mins',
       title: 'Exercise',
       description: `Exercise minutes on ${dateMeasured}`,
       value: currentMetrics.currentExercise,
@@ -424,14 +424,14 @@ export const buildAllRadialChartConfigs = (
       unit: 'ml',
       title: 'Water Drunk',
       description: `Water drunk on ${dateMeasured}`,
-      value: currentMetrics.currentWater,
+      value: Math.floor(Number(currentMetrics.currentWater)).toString(),
       target: goalTargets.water,
       label: 'ml',
     }),
 
     distance: buildRadialChartConfig({
       dataKey: 'distance',
-      unit: 'Kms',
+      unit: 'km',
       title: 'Distance Walked',
       description: `Distance on ${dateMeasured}`,
       value: currentMetrics.currentDistance,
