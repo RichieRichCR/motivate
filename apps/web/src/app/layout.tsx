@@ -5,6 +5,7 @@ import './globals.css';
 import { NavBar } from '@/components/nav';
 // import { AnimatedGradientBackground } from '@/components/animated-gradient-bg';
 import Aurora from '../components/aurora';
+import { TimeframeProvider } from './provider/timeframe-provider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -59,18 +60,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background min-h-screen flex items-center justify-center`}
       >
-        <Aurora
-          colorStops={['#3A29FF', '#Fd12B3', '#0ff9aa']}
-          blend={0.75}
-          amplitude={0.5}
-          speed={0.25}
-        />
+        <TimeframeProvider defaultTimeRange="7d">
+          <Aurora
+            colorStops={['#3A29FF', '#Fd12B3', '#0ff9aa']}
+            blend={0.75}
+            amplitude={0.5}
+            speed={0.25}
+          />
 
-        {/* <AnimatedGradientBackground /> */}
-        <div className="relative z-10 p-4 container h-full">
-          <NavBar />
-          {children}
-        </div>
+          {/* <AnimatedGradientBackground /> */}
+          <div className="relative z-10 p-4 container h-full">
+            <NavBar />
+            {children}
+          </div>
+        </TimeframeProvider>
       </body>
     </html>
   );

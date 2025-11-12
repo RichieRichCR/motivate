@@ -14,6 +14,7 @@ import {
 } from '../../lib/dashboard-helpers';
 import { TitleSection } from '../title/title-section';
 import { DataProvider } from '@/app/provider/data-provider';
+import { TimeframeProvider } from '@/app/provider/timeframe-provider';
 import { WeightSection } from '../weight-section';
 import { RadialChartsSection } from '../radial-charts-section';
 import { LinearChartSection } from '../linear-chart-section';
@@ -106,13 +107,13 @@ export const Dashboard = async () => {
     <DataProvider data={data}>
       <div className="w-full flex flex-col gap-8">
         {/* <TitleSection className="w-full mt-8">Welcome</TitleSection>
-        <div className="max-w-3xl backdrop-blur-sm flex items-center p-6 md:p-8 rounded-2xl shadow-md bg-card">
-          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-            Track. Measure. Stay accountable. This dashboard helps me stay
-            motivated on my health journey with data syncing from my Apple Watch
-            and iPhone via HealthKit every night at 2am.
-          </p>
-        </div> */}
+          <div className="max-w-3xl backdrop-blur-sm flex items-center p-6 md:p-8 rounded-2xl shadow-md bg-card">
+            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
+              Track. Measure. Stay accountable. This dashboard helps me stay
+              motivated on my health journey with data syncing from my Apple Watch
+              and iPhone via HealthKit every night at 2am.
+            </p>
+          </div> */}
 
         <TitleSection className="w-full">Weight Summary</TitleSection>
 

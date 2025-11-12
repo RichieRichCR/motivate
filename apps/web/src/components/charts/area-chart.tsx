@@ -15,13 +15,9 @@ import {
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
 } from '@repo/ui';
 import { useAnimateOnView } from '@/hooks/use-animate-on-view';
+import { useTimeframe } from '@/app/provider/timeframe-provider';
 
 export const description = 'An interactive area chart';
 
@@ -33,45 +29,41 @@ export interface AreaSeries {
   fillOpacity?: number;
 }
 
-export interface TimeRangeOption {
-  value: string;
-  label: string;
-  days: number;
-}
-
 export function ChartArea({
   chartData,
   title = 'Chart',
   description,
   chartConfig,
   series = [{ dataKey: 'value', color: 'var(--color-chart-2)' }],
-  timeRangeOptions = [
-    { value: '7d', label: 'Last 7 days', days: 7 },
-    { value: '30d', label: 'Last 30 days', days: 30 },
-    { value: '90d', label: 'Last 90 days', days: 90 },
-  ],
-  defaultTimeRange = '7d',
   dateKey = 'date',
   showLegend = true,
-  showTimeRange = true,
 }: {
   chartData: Record<string, unknown>[];
   title?: string;
   description?: string;
   chartConfig: ChartConfig;
   series?: AreaSeries[];
-  timeRangeOptions?: TimeRangeOption[];
-  defaultTimeRange?: string;
   dateKey?: string;
   showLegend?: boolean;
-  showTimeRange?: boolean;
 }) {
-  const [timeRange, setTimeRange] = React.useState(defaultTimeRange);
+  const { timeRange } = useTimeframe();
   const { isVisible, elementRef } = useAnimateOnView();
+  const [currentTimeRange, setCurrentTimeRange] = React.useState(timeRange);
+
+  // Update local state when context changes
+  React.useEffect(() => {
+    if (timeRange !== currentTimeRange) {
+      setCurrentTimeRange(timeRange);
+    }
+  }, [timeRange, currentTimeRange]);
 
   const filteredData = React.useMemo(() => {
-    const selectedRange = timeRangeOptions.find((r) => r.value === timeRange);
-    const daysToSubtract = selectedRange?.days || 90;
+    const TIME_RANGE_MAP: Record<string, number> = {
+      '7d': 7,
+      '30d': 30,
+      '90d': 90,
+    };
+    const daysToSubtract = TIME_RANGE_MAP[currentTimeRange] || 7;
 
     // Use UTC date for consistent filtering regardless of server timezone
     const now = new Date();
@@ -83,11 +75,13 @@ export function ChartArea({
       ),
     );
 
-    return chartData.filter((item) => {
+    const filtered = chartData.filter((item) => {
       const date = new Date(item[dateKey] as string);
       return date >= startDate;
     });
-  }, [chartData, timeRange, timeRangeOptions, dateKey]);
+
+    return filtered;
+  }, [chartData, currentTimeRange, dateKey]);
 
   return (
     <Card ref={elementRef} className="">
@@ -96,27 +90,6 @@ export function ChartArea({
           <CardTitle>{title}</CardTitle>
           {description && <CardDescription>{description}</CardDescription>}
         </div>
-        {showTimeRange && (
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger
-              className="hidden w-40 rounded-lg sm:ml-auto sm:flex"
-              aria-label="Select a value"
-            >
-              <SelectValue placeholder={timeRangeOptions[0]?.label} />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              {timeRangeOptions.map((option) => (
-                <SelectItem
-                  key={option.value}
-                  value={option.value}
-                  className="rounded-lg"
-                >
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
       </CardHeader>
       <CardContent className="px-2 sm:px-6 ">
         <ChartContainer

@@ -5,14 +5,6 @@ import { ChartArea } from './charts/area-chart';
 import { useMemo } from 'react';
 import { motion } from 'motion/react';
 
-// Common chart configuration to reduce duplication
-const COMMON_CHART_PROPS = {
-  defaultTimeRange: '7d' as const,
-  dateKey: 'date' as const,
-  showLegend: true,
-  showTimeRange: true,
-};
-
 export const LinearChartSection = () => {
   const {
     linearCharts: { weight, steps, energy, exercise, distance, water },
@@ -110,7 +102,8 @@ export const LinearChartSection = () => {
                 fillOpacity: 0.3,
               },
             ]}
-            {...COMMON_CHART_PROPS}
+            dateKey="date"
+            showLegend={true}
           />
         </motion.div>
       ))}
