@@ -3,6 +3,7 @@
 import { useDataContext } from '@/app/provider/data-provider';
 import { ChartArea } from './charts/area-chart';
 import { useMemo } from 'react';
+import { motion } from 'motion/react';
 
 // Common chart configuration to reduce duplication
 const COMMON_CHART_PROPS = {
@@ -73,30 +74,45 @@ export const LinearChartSection = () => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      {chartConfigs.map((config) => (
-        <ChartArea
+      {chartConfigs.map((config, index) => (
+        <motion.div
           key={config.configKey}
-          chartData={config.data}
-          title={config.title}
-          description={config.description}
-          chartConfig={{
-            [config.configKey]: {
-              label: config.label,
-            },
-            value: {
-              label: config.label.toLowerCase(),
-              color: config.color,
-            },
+          initial={{ opacity: 0, y: 30, scale: 0.95 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, margin: '-100px' }}
+          transition={{
+            duration: 0.6,
+            delay: index * 0.1,
+            ease: 'easeOut',
           }}
-          series={[
-            {
-              dataKey: 'value',
-              color: config.color,
-              fillOpacity: 0.3,
-            },
-          ]}
-          {...COMMON_CHART_PROPS}
-        />
+          whileHover={{
+            scale: 1.02,
+            transition: { type: 'spring', stiffness: 300 },
+          }}
+        >
+          <ChartArea
+            chartData={config.data}
+            title={config.title}
+            description={config.description}
+            chartConfig={{
+              [config.configKey]: {
+                label: config.label,
+              },
+              value: {
+                label: config.label.toLowerCase(),
+                color: config.color,
+              },
+            }}
+            series={[
+              {
+                dataKey: 'value',
+                color: config.color,
+                fillOpacity: 0.3,
+              },
+            ]}
+            {...COMMON_CHART_PROPS}
+          />
+        </motion.div>
       ))}
     </div>
   );

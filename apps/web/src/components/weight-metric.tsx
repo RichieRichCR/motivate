@@ -25,7 +25,7 @@ export const WeightMetric = ({
   isTrendingDown,
 }: WeightMetricProps) => {
   return (
-    <div className="grow shrink w-full lg:w-auto">
+    <div className={cn('grow shrink w-full lg:w-auto')}>
       <div className="text-xs font-bold text-left text-foreground/45 uppercase tracking-widest gap-0">
         {label}
       </div>

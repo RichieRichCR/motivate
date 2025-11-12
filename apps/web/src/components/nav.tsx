@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { motion } from 'motion/react';
 
 export const NavBar = () => {
   const navRef = useRef<HTMLElement>(null);
@@ -27,14 +28,22 @@ export const NavBar = () => {
     <>
       {/* Sentinel element to detect when nav becomes sticky */}
       <div ref={sentinelRef} className="h-0" />
-      <nav
+      <motion.nav
         ref={navRef}
-        className="sticky top-0 w-full h-16 bg-foreground/5 backdrop-blur-sm flex items-center px-4 z-20 rounded-2xl shadow-md transition-all duration-200"
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="sticky top-0 w-full h-16 bg-card/30 backdrop-blur-2xl text-card-foreground gap-6  border border-foreground/20 py-6 shadow-2xl flex items-center px-4 z-20 rounded-2xl transition-all duration-200 transform-3d"
       >
-        <h1 className="text-sm tracking-widest uppercase font-black">
+        <motion.h1
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-sm tracking-widest uppercase font-black"
+        >
           Motivate Richie Rich
-        </h1>
-      </nav>
+        </motion.h1>
+      </motion.nav>
     </>
   );
 };

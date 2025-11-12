@@ -10,6 +10,165 @@ nav.stuck {
   @apply rounded-t-none bg-foreground/15;
 }
 
+/* Glassmorphism Effects */
+.glass-card {
+  @apply bg-foreground/5 backdrop-blur-xl border border-foreground/10;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Animated Background Gradients */
+@-webkit-keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animated-gradient {
+  background: linear-gradient(270deg, var(--color-primary), var(--color-chart-1), var(--color-chart-blue-1));
+  background-size: 600% 600%;
+  -webkit-animation: gradient-shift 15s ease infinite;
+  animation: gradient-shift 15s ease infinite;
+}
+
+/* Skeleton Loading States */
+@-webkit-keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg,
+      var(--color-muted) 0px,
+      var(--color-muted-foreground) 50%,
+      var(--color-muted) 100%);
+  background-size: 1000px 100%;
+  -webkit-animation: shimmer 2s infinite linear;
+  animation: shimmer 2s infinite linear;
+}
+
+/* Color Pulse Animation for Trends */
+@-webkit-keyframes pulse-red {
+  0%, 100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes pulse-red {
+  0%, 100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@-webkit-keyframes pulse-green {
+  0%, 100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes pulse-green {
+  0%, 100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.trend-warning {
+  -webkit-animation: pulse-red 2s ease-in-out infinite;
+  animation: pulse-red 2s ease-in-out infinite;
+}
+
+.trend-positive {
+  -webkit-animation: pulse-green 2s ease-in-out infinite;
+  animation: pulse-green 2s ease-in-out infinite;
+}
+
+/* Glow Effects */
+@-webkit-keyframes glow {
+  0%, 100% {
+    text-shadow: 0 0 4px currentColor,
+      0 0 8px currentColor;
+  }
+
+  50% {
+    text-shadow: 0 0 8px currentColor,
+      0 0 16px currentColor,
+      0 0 24px currentColor;
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    text-shadow: 0 0 4px currentColor,
+      0 0 8px currentColor;
+  }
+
+  50% {
+    text-shadow: 0 0 8px currentColor,
+      0 0 16px currentColor,
+      0 0 24px currentColor;
+  }
+}
+
+.glow-effect {
+  -webkit-animation: glow 2s ease-in-out infinite;
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* Number increment glow */
+.number-up {
+  text-shadow: 0 0 8px var(--color-chart-1),
+    0 0 16px var(--color-chart-1);
+}
+
+.number-down {
+  text-shadow: 0 0 8px var(--color-chart-red-1),
+    0 0 16px var(--color-chart-red-1);
+}
+
 .chart-20 {
   @apply text-chart-red-5;
 }

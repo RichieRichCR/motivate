@@ -7,9 +7,11 @@ import { useEffect, useState } from 'react';
 function RollingDigit({
   targetDigit,
   position,
+  direction,
 }: {
   targetDigit: string;
   position: number;
+  direction?: 'up' | 'down' | 'none';
 }) {
   const [currentDigit, setCurrentDigit] = useState('0');
 
@@ -70,6 +72,14 @@ function RollingDigit({
   const isDecimal = currentDigit === '.';
   const isNegative = currentDigit === '-';
 
+  // Add glow effect class based on direction
+  const glowClass =
+    direction === 'up'
+      ? 'number-up'
+      : direction === 'down'
+        ? 'number-down'
+        : '';
+
   return (
     <span
       className={cn(
@@ -117,9 +127,12 @@ function RollingDigit({
             mass: 0.8,
           }}
           style={{ transformPerspective: 800 }}
-          className={`flex items-center justify-center absolute inset-0 ${
-            isDecimal ? 'p-0' : ''
-          }`}
+          className={cn(
+            `flex items-center justify-center absolute inset-0 ${
+              isDecimal ? 'p-0' : ''
+            }`,
+            glowClass,
+          )}
         >
           {currentDigit}
         </motion.span>
@@ -151,6 +164,7 @@ export default function AnimateNumber({
           key={`pos-${i}`}
           targetDigit={char}
           position={chars.length - i - 1}
+          direction="none"
         />
       ))}
     </span>
