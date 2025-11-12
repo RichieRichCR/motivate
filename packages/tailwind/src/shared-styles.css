@@ -30,6 +30,11 @@
   --color-chart-blue-3: oklch(0.546 0.245 262.881);
   --color-chart-blue-4: oklch(0.488 0.243 264.376);
   --color-chart-blue-5: oklch(0.424 0.199 265.638);
+  --color-chart-red-1: oklch(0.81 0.117 11.638);
+  --color-chart-red-2: oklch(0.645 0.246 16.439);
+  --color-chart-red-3: oklch(0.586 0.253 17.585);
+  --color-chart-red-4: oklch(0.514 0.222 16.935);
+  --color-chart-red-5: oklch(0.455 0.188 13.697);
   --color-sidebar: oklch(0.985 0 0);
   --color-sidebar-foreground: oklch(0.141 0.005 285.823);
   --color-sidebar-primary: oklch(0.648 0.2 131.684);
@@ -90,4 +95,6 @@
   body {
     @apply bg-background text-foreground;
   }
+
+
 }

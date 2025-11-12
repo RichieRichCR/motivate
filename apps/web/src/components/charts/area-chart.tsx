@@ -179,12 +179,13 @@ export function ChartArea({
             {series.map((s) => (
               <Area
                 key={s.dataKey}
-                dataKey={s.dataKey}
+                dataKey={isVisible ? s.dataKey : ''}
                 type="natural"
                 fill={`url(#fill-${s.dataKey})`}
                 stroke={s.color}
                 stackId={s.stackId}
                 isAnimationActive={isVisible}
+                animationBegin={300}
               />
             ))}
             {showLegend && <ChartLegend content={<ChartLegendContent />} />}

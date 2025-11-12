@@ -255,6 +255,71 @@ export const convertWaterToLiters = (
 // ============================================================================
 
 /**
+ * Assigns a color variant based on proximity to target
+ *
+ * @param value - Current value
+ * @param target - Target value
+ * @returns CSS variable string for the appropriate color
+ *
+ * Logic:
+ * - Below target: Red variants (--color-chart-red-1 to red-5)
+ *   - Darker red = further from target
+ * - At or above target: Green variants (--color-chart-1 to chart-5)
+ *   - Darker green = further above target
+ * - 20% ranges: 0-20%, 20-40%, 40-60%, 60-80%, 80-100%+
+ */
+export const getProgressColor = (
+  value: number,
+  target: number,
+  includeVar = true,
+): string => {
+  const percentage = (value / target) * 100;
+
+  console.log('Calculating progress color:', { value, target, percentage });
+
+  let colorString = '';
+
+  if (percentage < 100) {
+    if (percentage < 20) colorString = '--color-chart-red-5';
+    if (percentage < 40) colorString = '--color-chart-red-4';
+    if (percentage < 60) colorString = '--color-chart-red-3';
+    if (percentage < 80) colorString = '--color-chart-red-2';
+    colorString = '--color-chart-red-1';
+    return includeVar ? `var(${colorString})` : colorString;
+  }
+
+  const overPercentage = percentage - 100; // How much over target
+  if (overPercentage === 0) colorString = '--color-chart-1';
+  if (overPercentage < 20) colorString = '--color-chart-1';
+  if (overPercentage < 40) colorString = '--color-chart-2';
+  if (overPercentage < 60) colorString = '--color-chart-3';
+  if (overPercentage < 80) colorString = '--color-chart-4';
+  colorString = '--color-chart-5';
+
+  return includeVar ? `var(${colorString})` : colorString;
+};
+
+export const getProgressClass = (value: number, target: number): string => {
+  const percentage = (value / target) * 100;
+
+  if (percentage < 100) {
+    if (percentage < 20) return 'chart-20';
+    if (percentage < 40) return 'chart-40';
+    if (percentage < 60) return 'chart-60';
+    if (percentage < 80) return 'chart-80';
+    return 'chart-100';
+  }
+
+  const overPercentage = percentage - 100; // How much over target
+  if (overPercentage === 0) return 'chart-120';
+  if (overPercentage < 20) return 'chart-120';
+  if (overPercentage < 40) return 'chart-140';
+  if (overPercentage < 60) return 'chart-160';
+  if (overPercentage < 80) return 'chart-180';
+  return 'chart-200';
+};
+
+/**
  * Creates radial chart data with fill color
  * Ensures data is in the correct format for the chart component
  */
@@ -287,15 +352,31 @@ export const buildRadialChartConfig = ({
   value: string | undefined;
   target: { value: number; startDate?: string | undefined };
   label: string;
-}): RadialChartConfig => ({
-  unit,
-  title,
-  description,
-  chartData: createRadialChartData(value, dataKey),
-  target: target.value,
-  chartConfig: { [dataKey]: { label } },
-  dataKey,
-});
+}): RadialChartConfig => {
+  const numericValue = Number(value ?? 0);
+  const fillColor = getProgressColor(numericValue, target.value);
+
+  console.log('Radial Chart Config:', {
+    dataKey,
+    unit,
+    title,
+    description,
+    value: numericValue,
+    target: target.value,
+    label,
+    fillColor,
+  });
+
+  return {
+    unit,
+    title,
+    description,
+    chartData: createRadialChartData(value, dataKey, fillColor),
+    target: target.value,
+    chartConfig: { [dataKey]: { label } },
+    dataKey,
+  };
+};
 
 export const buildAllRadialChartConfigs = (
   currentMetrics: DashboardMetrics,

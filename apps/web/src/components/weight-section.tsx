@@ -13,6 +13,7 @@ import {
 } from '@repo/ui';
 import { useWeightCalculations } from './weight-section-hooks';
 import { WeightMetric } from './weight-metric';
+import { getProgressClass, getProgressColor } from '@/lib/dashboard-helpers';
 
 export const WeightSection = () => {
   const { currentMetrics, goalTargets, user, metricIds, weightHistory } =
@@ -83,7 +84,15 @@ export const WeightSection = () => {
               Progress
             </div>
             <div className="flex flex-row flex-nowrap gap-4 justify-center items-center">
-              <Progress value={progress} />
+              <Progress
+                value={progress}
+                aria-description={`Weight Loss Progress @ ${progress}`}
+                className={cn(
+                  'w-full h-2 rounded-lg',
+                  `${getProgressClass(Number(progress), 100)}`,
+                )}
+                // color={getProgressColor(Number(progress), 100, false)}
+              />
               <div className="text-sm flex items-center shrink-0">
                 {progress}% to goal
               </div>

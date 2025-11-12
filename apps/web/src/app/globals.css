@@ -9,3 +9,43 @@
 nav.stuck {
   @apply rounded-t-none bg-foreground/15;
 }
+
+.chart-20 {
+  @apply text-chart-red-5;
+}
+
+.chart-40 {
+  @apply text-chart-red-4;
+}
+
+.chart-60 {
+  @apply text-chart-red-3;
+}
+
+.chart-80 {
+  @apply text-chart-red-2;
+}
+
+.chart-100 {
+  @apply text-chart-red-1;
+}
+
+.chart-120 {
+  @apply text-chart-1;
+}
+
+.chart-140 {
+  @apply text-chart-2;
+}
+
+.chart-160 {
+  @apply text-chart-3;
+}
+
+.chart-180 {
+  @apply text-chart-4;
+}
+
+.chart-200 {
+  @apply text-chart-5;
+}

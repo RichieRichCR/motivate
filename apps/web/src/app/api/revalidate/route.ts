@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     await revalidateTag('metric', 'max');
     await revalidatePath('/');
     return NextResponse.json({ revalidated: true, now: Date.now() });
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       { message: 'Error revalidating' },
       { status: 500 },

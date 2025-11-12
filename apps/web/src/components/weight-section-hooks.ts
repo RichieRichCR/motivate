@@ -88,7 +88,7 @@ export const useWeightCalculations = ({
       sevenDayTrend,
       progress,
       isAboveTarget: weightToGo >= 0,
-      isTrendingDown: sevenDayTrend !== null && sevenDayTrend <= 0,
+      isTrendingDown: sevenDayTrend !== null && sevenDayTrend < 0,
     };
   }, [currentWeight, targetWeight, weightHistory, startDate]);
 };
