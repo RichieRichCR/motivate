@@ -1,21 +1,17 @@
 'use client';
-import {
+import type {
   DashboardGoals,
   DashboardMetrics,
   MetricIds,
   RadialChartConfig,
-} from '@/lib/dashboard-helpers';
+  ChartDataType,
+} from '@/types';
 import {
   MetricSchemaResponse,
   UserDataResponse,
   UserGoalsResponse,
 } from '@repo/api/types';
 import { createContext, useContext } from 'react';
-
-export type ChartDataType = Array<{
-  date: string;
-  value: number;
-}>;
 
 export type DataContextType = {
   userId: string;

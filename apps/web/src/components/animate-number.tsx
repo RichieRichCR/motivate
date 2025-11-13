@@ -1,8 +1,13 @@
 'use client';
 
-import { cn } from '@repo/ui';
-import { motion, AnimatePresence } from 'motion/react';
 import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { cn } from '@repo/ui';
+import {
+  DIGIT_ANIMATION_BASE_DELAY_MS,
+  DIGIT_ANIMATION_MIN_STEP_MS,
+  DIGIT_ANIMATION_MAX_STEP_MS,
+} from '@/lib/utils';
 
 function RollingDigit({
   targetDigit,
@@ -38,7 +43,7 @@ function RollingDigit({
     setCurrentDigit('0');
 
     // Delay based on position (rightmost digits start first)
-    const startDelay = position * 150;
+    const startDelay = position * DIGIT_ANIMATION_BASE_DELAY_MS;
 
     const timeout = setTimeout(() => {
       // Easing function - starts fast, slows down
@@ -46,8 +51,9 @@ function RollingDigit({
         const progress = step / total;
         // Ease out quadratic
         const easeProgress = 1 - (1 - progress) * (1 - progress);
-        // Start at 80ms, end at 250ms
-        return 80 + easeProgress * 170;
+        const range =
+          DIGIT_ANIMATION_MAX_STEP_MS - DIGIT_ANIMATION_MIN_STEP_MS;
+        return DIGIT_ANIMATION_MIN_STEP_MS + easeProgress * range;
       };
 
       let stepCount = 0;

@@ -43,10 +43,7 @@ test.describe('Accessibility', () => {
     await expect(firstText).toBeVisible();
   });
 
-  test('should work with reduced motion preference', async ({
-    page,
-    context,
-  }) => {
+  test('should work with reduced motion preference', async ({ page }) => {
     // Set prefers-reduced-motion
     await page.emulateMedia({ reducedMotion: 'reduce' });
 

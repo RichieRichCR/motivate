@@ -1,7 +1,11 @@
 'use client';
 
 import { useDataContext } from '@/app/provider/data-provider';
-import { getMetricDate } from '@/lib/utils';
+import {
+  getMetricDate,
+  CONFETTI_INTERVAL_MS,
+  CONFETTI_PARTICLE_BASE_COUNT,
+} from '@/lib/utils';
 import {
   Card,
   CardContent,
@@ -13,7 +17,7 @@ import {
 } from '@repo/ui';
 import { useWeightCalculations } from './weight-section-hooks';
 import { WeightMetric } from './weight-metric';
-import { getProgressClass } from '@/lib/dashboard-helpers';
+import { getProgressClass } from '@/lib/chart-utils';
 import { motion } from 'motion/react';
 import { useEffect, useMemo, useRef } from 'react';
 import confetti from 'canvas-confetti';
@@ -23,8 +27,6 @@ export const WeightSection = () => {
   const { currentMetrics, goalTargets, user, metricIds, weightHistory } =
     useDataContext();
   const { timeRange } = useTimeframe();
-
-  console.log('WeightSection timeRange:', timeRange);
 
   const metricDate = getMetricDate(user.data, metricIds.weight);
   const displayDate = metricDate
@@ -118,7 +120,8 @@ export const WeightSection = () => {
           return clearInterval(interval);
         }
 
-        const particleCount = 50 * (timeLeft / duration);
+        const particleCount =
+          CONFETTI_PARTICLE_BASE_COUNT * (timeLeft / duration);
 
         confetti({
           ...defaults,
@@ -130,7 +133,7 @@ export const WeightSection = () => {
           particleCount,
           origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
         });
-      }, 250);
+      }, CONFETTI_INTERVAL_MS);
     }
   }, [progress]);
 

@@ -6,64 +6,16 @@
  */
 
 import { METRIC_CONFIG } from './utils';
-import type { MetricName } from '../types';
-
-// ============================================================================
-// Types & Interfaces
-// ============================================================================
-
-export interface MetricIds {
-  weight: number;
-  steps: number;
-  exercise: number;
-  standing: number;
-  distance: number;
-  water: number;
-  energy: number;
-}
-
-export interface DashboardMetrics {
-  currentWeight?: string;
-  currentDistance?: string;
-  currentWater?: string;
-  currentSteps?: string;
-  currentExercise?: string;
-  currentStanding?: string;
-  currentEnergy?: string;
-  dateMeasured?: string;
-}
-
-export interface DashboardGoals {
-  weight: { value: number; startDate?: string | undefined };
-  steps: { value: number; startDate?: string | undefined };
-  exercise: { value: number; startDate?: string | undefined };
-  standing: { value: number; startDate?: string | undefined };
-  water: { value: number; startDate?: string | undefined };
-  distance: { value: number; startDate?: string | undefined };
-  energy: { value: number; startDate?: string | undefined };
-}
-
-export interface RadialChartConfig {
-  unit: string;
-  title: string;
-  description: string;
-  chartData: Array<{ [key: string]: number | string }>;
-  target: number;
-  chartConfig: { [key: string]: { label: string } };
-  dataKey: string;
-}
-
-export interface UserDataItem {
-  metricTypeId: number;
-  value: string;
-  measuredAt?: Date;
-}
-
-export interface GoalDataItem {
-  metricTypeId: number;
-  targetValue: string;
-  startDate?: string;
-}
+import { getProgressColor, createRadialChartData } from './chart-utils';
+import type {
+  MetricName,
+  MetricIds,
+  DashboardMetrics,
+  DashboardGoals,
+  RadialChartConfig,
+  UserDataItem,
+  GoalDataItem,
+} from '../types';
 
 // ============================================================================
 // Metric ID Resolution
@@ -72,6 +24,8 @@ export interface GoalDataItem {
 /**
  * Creates a lookup function for metric IDs with fallback to defaults
  * Uses closure to capture the metricIdMap for efficient lookups
+ * @param metricIdMap - Record mapping metric names to IDs
+ * @returns Function that resolves metric IDs
  */
 export const createMetricIdResolver = (metricIdMap: Record<string, number>) => {
   return (name: MetricName): number =>
@@ -81,6 +35,8 @@ export const createMetricIdResolver = (metricIdMap: Record<string, number>) => {
 /**
  * Resolves all metric IDs in a single operation
  * This batches the lookups for better performance
+ * @param metricIdMap - Record mapping metric names to IDs
+ * @returns Object containing all resolved metric IDs
  */
 export const resolveAllMetricIds = (
   metricIdMap: Record<string, number>,
@@ -209,8 +165,10 @@ export const extractGoalTargets = (
 };
 
 /**
- * Gets the measurement date for a specific metric
- * Falls back to find() since we only call this a few times
+ * Get the measurement date for a specific metric
+ * @param userData - Array of user data items
+ * @param metricTypeId - ID of the metric to find
+ * @returns Date string or undefined if not found
  */
 export const getMetricDate = (
   userData: UserDataItem[],
@@ -226,8 +184,9 @@ export const getMetricDate = (
 // ============================================================================
 
 /**
- * Transforms measurement data for chart consumption
- * Converts API format to chart-ready format
+ * Transform measurement data to chart-ready format
+ * @param measurements - Array of measurements with date and value
+ * @returns Array of chart data points
  */
 export const transformMeasurementData = (
   measurements: Array<{ measuredAt: Date; value: string }>,
@@ -239,8 +198,9 @@ export const transformMeasurementData = (
 };
 
 /**
- * Converts water measurement from milliliters to liters
- * Returns undefined if value is not provided
+ * Convert water measurement from milliliters to liters
+ * @param waterMl - Water value in milliliters
+ * @returns Water value in liters, rounded to 2 decimal places
  */
 export const convertWaterToLiters = (
   waterMl: string | undefined,
@@ -251,90 +211,13 @@ export const convertWaterToLiters = (
 };
 
 // ============================================================================
-// Chart Configuration
+// Radial Chart Configuration
 // ============================================================================
 
 /**
- * Assigns a color variant based on proximity to target
- *
- * @param value - Current value
- * @param target - Target value
- * @returns CSS variable string for the appropriate color
- *
- * Logic:
- * - Below target: Red variants (--color-chart-red-1 to red-5)
- *   - Darker red = further from target
- * - At or above target: Green variants (--color-chart-1 to chart-5)
- *   - Darker green = further above target
- * - 20% ranges: 0-20%, 20-40%, 40-60%, 60-80%, 80-100%+
- */
-export const getProgressColor = (
-  value: number,
-  target: number,
-  includeVar = true,
-): string => {
-  const percentage = (value / target) * 100;
-
-  console.log('Calculating progress color:', { value, target, percentage });
-
-  let colorString = '';
-
-  if (percentage < 100) {
-    if (percentage < 20) colorString = '--color-chart-red-5';
-    if (percentage < 40) colorString = '--color-chart-red-4';
-    if (percentage < 60) colorString = '--color-chart-red-3';
-    if (percentage < 80) colorString = '--color-chart-red-2';
-    colorString = '--color-chart-red-1';
-    return includeVar ? `var(${colorString})` : colorString;
-  }
-
-  const overPercentage = percentage - 100; // How much over target
-  if (overPercentage === 0) colorString = '--color-chart-1';
-  if (overPercentage < 20) colorString = '--color-chart-1';
-  if (overPercentage < 40) colorString = '--color-chart-2';
-  if (overPercentage < 60) colorString = '--color-chart-3';
-  if (overPercentage < 80) colorString = '--color-chart-4';
-  colorString = '--color-chart-5';
-
-  return includeVar ? `var(${colorString})` : colorString;
-};
-
-export const getProgressClass = (value: number, target: number): string => {
-  const percentage = (value / target) * 100;
-
-  if (percentage < 100) {
-    if (percentage < 20) return 'chart-20';
-    if (percentage < 40) return 'chart-40';
-    if (percentage < 60) return 'chart-60';
-    if (percentage < 80) return 'chart-80';
-    return 'chart-100';
-  }
-
-  const overPercentage = percentage - 100; // How much over target
-  if (overPercentage === 0) return 'chart-120';
-  if (overPercentage < 20) return 'chart-120';
-  if (overPercentage < 40) return 'chart-140';
-  if (overPercentage < 60) return 'chart-160';
-  if (overPercentage < 80) return 'chart-180';
-  return 'chart-200';
-};
-
-/**
- * Creates radial chart data with fill color
- * Ensures data is in the correct format for the chart component
- */
-export const createRadialChartData = (
-  value: string | undefined,
-  dataKey: string,
-  fillColor = 'var(--color-chart-2)',
-  fillOpacity = 0.7,
-) => {
-  return [{ [dataKey]: Number(value ?? 0), fill: fillColor, fillOpacity }];
-};
-
-/**
- * Builds a complete configuration object for radial charts
- * This provides a consistent interface for all radial charts
+ * Build complete configuration for a single radial chart
+ * @param config - Configuration object with metric details
+ * @returns Complete radial chart configuration
  */
 export const buildRadialChartConfig = ({
   dataKey,
@@ -355,17 +238,6 @@ export const buildRadialChartConfig = ({
 }): RadialChartConfig => {
   const numericValue = Number(value ?? 0);
   const fillColor = getProgressColor(numericValue, target.value);
-
-  console.log('Radial Chart Config:', {
-    dataKey,
-    unit,
-    title,
-    description,
-    value: numericValue,
-    target: target.value,
-    label,
-    fillColor,
-  });
 
   return {
     unit,

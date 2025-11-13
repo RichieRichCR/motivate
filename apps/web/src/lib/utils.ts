@@ -1,6 +1,10 @@
-import { WeightHistoryEntry } from '@/components/weight-section-hooks';
-import { ChartDataPoint, MetricData } from '../types';
+import type { ChartDataPoint, MetricData, WeightHistoryEntry } from '../types';
 
+/**
+ * Format a date string to locale date format
+ * @param date - Date string to format
+ * @returns Formatted date string in locale format
+ */
 export const formatDate = (date: string): string => {
   return new Date(date).toLocaleDateString('en-GB');
 };
@@ -10,10 +14,32 @@ export const DAYS_TO_FETCH = 90;
 export const DAYS_IN_WEEK = 7;
 export const DAYS_IN_MONTH = 30;
 export const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+export const DATA_FETCH_WINDOW_DAYS = 91;
+
+// Metric types
+export const METRIC_TYPES = [
+  'steps',
+  'weight',
+  'energy',
+  'exercise',
+  'distance',
+  'water',
+] as const;
+
+export type MetricType = (typeof METRIC_TYPES)[number];
 
 // Chart-related constants
 export const CHART_FILL_COLOR = 'var(--color-chart-2)';
 export const DEFAULT_TARGET = 10000;
+export const CHART_HEIGHT = 250; // pixels
+
+// Animation constants
+export const CONFETTI_INTERVAL_MS = 250;
+export const CONFETTI_PARTICLE_BASE_COUNT = 50;
+export const ANIMATION_GRAVITATE_DURATION_MS = 1500;
+export const DIGIT_ANIMATION_BASE_DELAY_MS = 150;
+export const DIGIT_ANIMATION_MIN_STEP_MS = 80;
+export const DIGIT_ANIMATION_MAX_STEP_MS = 250;
 
 // Cache revalidation (in seconds)
 export const CACHE_REVALIDATE_TIME = 60; // 1 minute
@@ -29,9 +55,11 @@ export const METRIC_CONFIG = {
   energy: { name: 'energy', defaultId: 7 },
 } as const;
 
-// Helper Types
-
-// Helper Functions
+/**
+ * Calculate date range for data fetching
+ * @param daysBack - Number of days to go back from today
+ * @returns Object with startDate and endDate in YYYY-MM-DD format
+ */
 export const getDateRange = (daysBack: number) => {
   const now = new Date();
   // Use UTC methods to ensure consistent timezone handling
@@ -54,6 +82,11 @@ export const getDateRange = (daysBack: number) => {
   return { startDate, endDate };
 };
 
+/**
+ * Format a date to ISO string (YYYY-MM-DD)
+ * @param date - Date string or Date object
+ * @returns Date string in YYYY-MM-DD format
+ */
 export const formatDateString = (date: string | Date): string => {
   return new Date(date).toISOString().split('T')[0];
 };
@@ -96,6 +129,11 @@ export const getUTCDateDaysAgo = (daysAgo: number): Date => {
   );
 };
 
+/**
+ * Transform raw measurement data into chart data points
+ * @param measurements - Array of measurement objects with date and value
+ * @returns Array of chart data points
+ */
 export const transformMeasurementData = (
   measurements: Array<{ measuredAt: Date; value: string }>,
 ): ChartDataPoint[] => {
@@ -105,6 +143,11 @@ export const transformMeasurementData = (
   }));
 };
 
+/**
+ * Create a lookup map of metric names to their IDs
+ * @param metrics - Array of metric objects with id and name
+ * @returns Record mapping metric names to IDs
+ */
 export const createMetricIdMap = (
   metrics: Array<{ id: number; name: string }>,
 ): Record<string, number> => {
@@ -117,6 +160,12 @@ export const createMetricIdMap = (
   );
 };
 
+/**
+ * Get the value of a specific metric from user data
+ * @param data - Array of metric data items
+ * @param metricTypeId - ID of the metric to find
+ * @returns The metric value or undefined if not found
+ */
 export const getMetricValue = (
   data: MetricData[],
   metricTypeId: number,
@@ -124,6 +173,12 @@ export const getMetricValue = (
   return data.find((d) => d.metricTypeId === metricTypeId)?.value;
 };
 
+/**
+ * Get the measurement date of a specific metric
+ * @param data - Array of metric data items
+ * @param metricTypeId - ID of the metric to find
+ * @returns The measurement date as string or undefined if not found
+ */
 export const getMetricDate = (
   data: MetricData[],
   metricTypeId: number,
@@ -134,6 +189,13 @@ export const getMetricDate = (
   return measuredAt?.toString();
 };
 
+/**
+ * Get the target value for a specific metric from goals
+ * @param goals - Array of goal objects
+ * @param metricTypeId - ID of the metric to find
+ * @param defaultValue - Default value to return if goal not found
+ * @returns The goal target value as number
+ */
 export const getGoalTarget = (
   goals: Array<{ metricTypeId: number; targetValue: string }>,
   metricTypeId: number,
@@ -145,6 +207,11 @@ export const getGoalTarget = (
   return targetValue ? Number(targetValue) : defaultValue;
 };
 
+/**
+ * Create chart data array for radial charts
+ * @param value - The metric value to display
+ * @returns Array with single data point for chart
+ */
 export const createRadialChartData = (value: string | undefined) => {
   return [{ value: Number(value ?? 0), fill: CHART_FILL_COLOR }];
 };
@@ -166,11 +233,16 @@ export const getDaysFromTimeRange = (timeRange: string): number => {
   }
 };
 
+/**
+ * Find the most recent weight entry on or before a specific date
+ * @param data - Array of weight history entries
+ * @param timeRange - Target date to find entry for
+ * @returns Weight entry or undefined if not found
+ */
 export const getEntryForTimeRange = (
   data: WeightHistoryEntry[],
   timeRange: Date,
 ): WeightHistoryEntry | undefined => {
-  console.log('getEntryForTimeRange called with timeRange:', data, timeRange);
   return data
     .slice()
     .sort(

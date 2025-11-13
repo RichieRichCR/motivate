@@ -7,13 +7,11 @@ import {
   getMetricDate,
   transformMeasurementData,
   convertWaterToLiters,
-  createRadialChartData,
   buildRadialChartConfig,
   buildAllRadialChartConfigs,
-  type MetricIds,
-  type UserDataItem,
-  type GoalDataItem,
 } from './dashboard-helpers';
+import { createRadialChartData } from './chart-utils';
+import type { MetricIds, UserDataItem, GoalDataItem } from '@/types';
 
 describe('dashboard-helpers', () => {
   describe('createMetricIdResolver', () => {

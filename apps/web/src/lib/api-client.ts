@@ -62,7 +62,6 @@ export const fetcher: FetcherClient = async <T>(
   url: string,
   options?: RequestInit,
 ) => {
-  console.log('Fetching URL:', url);
   const response = await fetch(url, {
     ...options,
     headers: {

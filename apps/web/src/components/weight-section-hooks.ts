@@ -5,30 +5,7 @@ import {
   getUTCDateDaysAgo,
   isSameUTCDate,
 } from '@/lib/utils';
-
-export interface WeightHistoryEntry {
-  measuredAt: Date;
-  value: string;
-}
-
-interface UseWeightCalculationsProps {
-  currentWeight: string | undefined;
-  targetWeight: number;
-  weightHistory: WeightHistoryEntry[];
-  startDate?: string;
-}
-
-interface WeightCalculations {
-  weightToGo: number;
-  sevenDayTrend: number | null;
-  thirtyDayTrend: number | null;
-  ninetyDayTrend: number | null;
-  progress: number;
-  isAboveTarget: boolean;
-  sevenDayIsTrendingDown: boolean;
-  thirtyDayIsTrendingDown: boolean;
-  ninetyDayIsTrendingDown: boolean;
-}
+import type { UseWeightCalculationsProps, WeightCalculations } from '@/types';
 
 /**
  * Custom hook to calculate weight-related metrics
@@ -57,13 +34,6 @@ export const useWeightCalculations = ({
       weightHistory,
       ninetyDaysAgoUTC,
     );
-
-    console.log('Weight Calculations Debug:', {
-      current,
-      lastWeekEntry,
-      thirtyDayEntry,
-      ninetyDayEntry,
-    });
 
     const lastWeekWeight = lastWeekEntry ? Number(lastWeekEntry.value) : null;
     const thirtyDayWeight = thirtyDayEntry

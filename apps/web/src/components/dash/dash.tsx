@@ -1,6 +1,12 @@
 import { api } from '../../lib/api-client';
 import { env } from '../../env';
-import { createMetricIdMap, getDateRange } from '../../lib/utils';
+import {
+  createMetricIdMap,
+  getDateRange,
+  METRIC_TYPES,
+  DATA_FETCH_WINDOW_DAYS,
+  type MetricType,
+} from '../../lib/utils';
 import {
   buildAllRadialChartConfigs,
   extractCurrentMetrics,
@@ -14,20 +20,9 @@ import { WeightSection } from '../weight-section';
 import { RadialChartsSection } from '../radial-charts-section';
 import { LinearChartSection } from '../linear-chart-section';
 
-const METRIC_TYPES = [
-  'steps',
-  'weight',
-  'energy',
-  'exercise',
-  'distance',
-  'water',
-] as const;
-
-type MetricType = (typeof METRIC_TYPES)[number];
-
 export const Dashboard = async () => {
   const userId = env.USER_ID;
-  const { startDate, endDate } = getDateRange(91);
+  const { startDate, endDate } = getDateRange(DATA_FETCH_WINDOW_DAYS);
 
   // Fetch user data, goals, and available metrics
   const [user, goals, metrics] = await Promise.all([
@@ -51,20 +46,11 @@ export const Dashboard = async () => {
     ),
   );
 
-  // Create a map of metric type to history data
-  const historyMap = METRIC_TYPES.reduce(
-    (acc, type, index) => {
-      acc[type] = measurementHistories[index];
-      return acc;
-    },
-    {} as Record<MetricType, (typeof measurementHistories)[number]>,
-  );
-
-  // Transform all measurement data
+  // Transform measurement data directly, avoiding intermediate maps
   const transformedData = Object.fromEntries(
-    METRIC_TYPES.map((type) => [
+    METRIC_TYPES.map((type, index) => [
       type,
-      transformMeasurementData(historyMap[type].data),
+      transformMeasurementData(measurementHistories[index].data),
     ]),
   ) as Record<MetricType, ReturnType<typeof transformMeasurementData>>;
 
@@ -79,21 +65,14 @@ export const Dashboard = async () => {
     user,
     goals,
     metrics,
-    linearCharts: {
-      steps: transformedData.steps,
-      weight: transformedData.weight,
-      exercise: transformedData.exercise,
-      energy: transformedData.energy,
-      distance: transformedData.distance,
-      water: transformedData.water,
-    },
+    linearCharts: transformedData,
     radialCharts,
     currentMetrics,
     goalTargets,
-    stepsHistory: historyMap.steps,
-    weightHistory: historyMap.weight,
-    energyHistory: historyMap.energy,
-    exerciseHistory: historyMap.exercise,
+    stepsHistory: measurementHistories[0],
+    weightHistory: measurementHistories[1],
+    energyHistory: measurementHistories[2],
+    exerciseHistory: measurementHistories[3],
     metricIdMap,
     metricIds,
   };
