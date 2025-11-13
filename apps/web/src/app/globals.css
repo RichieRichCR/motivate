@@ -7,7 +7,7 @@
 
 /* Sticky nav styles */
 nav.stuck {
-  @apply rounded-t-none bg-foreground/15;
+  @apply rounded-t-none bg-foreground/15 border-t-0;
 }
 
 /* Glassmorphism Effects */

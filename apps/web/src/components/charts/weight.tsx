@@ -69,7 +69,7 @@ export function WeightChart({
         <Select value={timeRange} onValueChange={setTimeRange}>
           <SelectTrigger
             className="hidden w-40 rounded-lg sm:ml-auto sm:flex"
-            aria-label="Select a value"
+            aria-label="Select time range for weight chart"
           >
             <SelectValue placeholder="Last 7 days" />
           </SelectTrigger>

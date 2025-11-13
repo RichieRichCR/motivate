@@ -67,7 +67,7 @@ export function StepsChart({
         <Select value={timeRange} onValueChange={setTimeRange}>
           <SelectTrigger
             className="hidden w-40 rounded-lg sm:ml-auto sm:flex"
-            aria-label="Select a value"
+            aria-label="Select time range for steps chart"
           >
             <SelectValue placeholder="Last 7 days" />
           </SelectTrigger>

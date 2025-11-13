@@ -17,7 +17,7 @@ function parseEnv<T>(schema: z.ZodType): T {
       const zodError = e as z.ZodError;
       zodError.issues.forEach((err) => {
         const path = err.path.join('.');
-        console.log(`${path}: ${err.message}`);
+        console.error(`${path}: ${err.message}`);
       });
     }
     // Don't exit in test environment, throw instead

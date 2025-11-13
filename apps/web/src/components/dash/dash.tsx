@@ -80,7 +80,10 @@ export const Dashboard = async () => {
   return (
     <DataProvider data={data}>
       <div className="w-full flex flex-col gap-8">
-        <TitleSection className="w-full">Weight Summary</TitleSection>
+        <div className="flex items-center justify-between w-full">
+          <TitleSection className="mb-0">Weight Summary</TitleSection>
+          {/* <ExportData /> */}
+        </div>
 
         <WeightSection />
 

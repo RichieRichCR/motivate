@@ -8,6 +8,8 @@ import { CHART_FILL_COLOR } from './utils';
 
 /**
  * Determine progress color based on percentage of target achieved
+ * Red colors for below target (darker as you get further below)
+ * Green colors for above target (darker as you get further above)
  * @param value - Current value
  * @param target - Target value
  * @param includeVar - Whether to wrap in CSS var() function
@@ -19,23 +21,27 @@ export const getProgressColor = (
   includeVar = true,
 ): string => {
   const percentage = (value / target) * 100;
-  let colorString = '--color-chart-1';
+  let colorString = '--color-chart-1'; // Default green
 
+  // Below target - use red colors (darker as percentage decreases)
   if (percentage < 100) {
-    if (percentage < 20) colorString = '--color-chart-red-1';
-    if (percentage < 40) colorString = '--color-chart-red-2';
-    if (percentage < 60) colorString = '--color-chart-red-3';
-    if (percentage < 80) colorString = '--color-chart-4';
+    if (percentage < 20)
+      colorString = '--color-chart-red-5'; // Darkest red
+    else if (percentage < 40) colorString = '--color-chart-red-4';
+    else if (percentage < 60) colorString = '--color-chart-red-3';
+    else if (percentage < 80) colorString = '--color-chart-red-2';
+    else colorString = '--color-chart-red-1'; // Lightest red (close to target)
     return includeVar ? `var(${colorString})` : colorString;
   }
 
+  // At or above target - use green colors (darker as percentage increases)
   const overPercentage = percentage - 100;
-  if (overPercentage === 0) colorString = '--color-chart-1';
-  if (overPercentage < 20) colorString = '--color-chart-1';
-  if (overPercentage < 40) colorString = '--color-chart-2';
-  if (overPercentage < 60) colorString = '--color-chart-3';
-  if (overPercentage < 80) colorString = '--color-chart-4';
-  colorString = '--color-chart-5';
+  if (overPercentage === 0)
+    colorString = '--color-chart-1'; // Base green
+  else if (overPercentage < 20) colorString = '--color-chart-2';
+  else if (overPercentage < 40) colorString = '--color-chart-3';
+  else if (overPercentage < 60) colorString = '--color-chart-4';
+  else colorString = '--color-chart-5'; // Darkest green
 
   return includeVar ? `var(${colorString})` : colorString;
 };
@@ -54,15 +60,15 @@ export const getProgressClass = (value: number, target: number): string => {
     if (percentage < 40) return 'chart-40';
     if (percentage < 60) return 'chart-60';
     if (percentage < 80) return 'chart-80';
-    return 'chart-99';
+    return 'chart-100';
   }
 
   const overPercentage = percentage - 100;
-  if (overPercentage < 20) return 'chart-100';
-  if (overPercentage < 40) return 'chart-120';
-  if (overPercentage < 60) return 'chart-140';
-  if (overPercentage < 80) return 'chart-160';
-  return 'chart-180';
+  if (overPercentage < 20) return 'chart-120';
+  if (overPercentage < 40) return 'chart-140';
+  if (overPercentage < 60) return 'chart-160';
+  if (overPercentage < 80) return 'chart-180';
+  return 'chart-200';
 };
 
 /**

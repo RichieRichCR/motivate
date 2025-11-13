@@ -32,7 +32,21 @@ export function TimeframeProvider({
   children: React.ReactNode;
   defaultTimeRange?: string;
 }) {
-  const [timeRange, setTimeRange] = React.useState(defaultTimeRange);
+  // Initialize from localStorage if available
+  const [timeRange, setTimeRangeState] = React.useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('timeRange') || defaultTimeRange;
+    }
+    return defaultTimeRange;
+  });
+
+  // Persist to localStorage when changed
+  const setTimeRange = React.useCallback((value: string) => {
+    setTimeRangeState(value);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('timeRange', value);
+    }
+  }, []);
 
   const selectedOption = React.useMemo(
     () =>
@@ -48,7 +62,7 @@ export function TimeframeProvider({
       timeRangeOptions: TIME_RANGE_OPTIONS,
       selectedOption,
     }),
-    [timeRange, selectedOption],
+    [timeRange, selectedOption, setTimeRange],
   );
 
   return (

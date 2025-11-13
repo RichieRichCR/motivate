@@ -62,6 +62,8 @@ export function RadialChart({
             }
             innerRadius={130}
             outerRadius={170}
+            aria-label={`${title} progress chart showing ${chartData[0]?.[dataKey] || 0} out of ${target} ${unit}`}
+            role="img"
           >
             <PolarGrid
               gridType="circle"

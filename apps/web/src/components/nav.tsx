@@ -51,32 +51,34 @@ export const NavBar = () => {
           className="text-sm tracking-widest uppercase font-black"
         >
           Motivate Me
-        </motion.h1>{' '}
-        <motion.div
-          initial={{ x: 20, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger
-              className="w-40 rounded-lg"
-              aria-label="Select time range"
-            >
-              <SelectValue placeholder={timeRangeOptions[0]?.label} />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              {timeRangeOptions.map((option) => (
-                <SelectItem
-                  key={option.value}
-                  value={option.value}
-                  className="rounded-lg"
-                >
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </motion.div>
+        </motion.h1>
+        <div className="flex items-center gap-2">
+          <motion.div
+            initial={{ x: 20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <Select value={timeRange} onValueChange={setTimeRange}>
+              <SelectTrigger
+                className="w-40 rounded-lg"
+                aria-label="Select time range for dashboard metrics"
+              >
+                <SelectValue placeholder={timeRangeOptions[0]?.label} />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                {timeRangeOptions.map((option) => (
+                  <SelectItem
+                    key={option.value}
+                    value={option.value}
+                    className="rounded-lg"
+                  >
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </motion.div>
+        </div>
       </motion.nav>
     </>
   );

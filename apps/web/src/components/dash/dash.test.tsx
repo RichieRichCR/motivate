@@ -7,7 +7,4 @@ describe('Dashboard Component', () => {
     // Integration and E2E tests should cover this component
     expect(true).toBe(true);
   });
-
-  // TODO: Add integration tests that mock the API responses
-  // TODO: Add E2E tests with Playwright to test the full dashboard flow
 });

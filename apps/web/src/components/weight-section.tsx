@@ -137,16 +137,6 @@ export const WeightSection = () => {
     }
   }, [progress]);
 
-  console.log('WeightSection render', {
-    weightToGo,
-    sevenDayTrend,
-    thirtyDayTrend,
-    ninetyDayTrend,
-    progress,
-    isAboveTarget,
-    isTrendingDown,
-  });
-
   return (
     <div className="grid grid-cols-1 gap-8">
       <motion.div
