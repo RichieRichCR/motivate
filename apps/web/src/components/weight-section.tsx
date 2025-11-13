@@ -15,12 +15,16 @@ import { useWeightCalculations } from './weight-section-hooks';
 import { WeightMetric } from './weight-metric';
 import { getProgressClass } from '@/lib/dashboard-helpers';
 import { motion } from 'motion/react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import confetti from 'canvas-confetti';
+import { useTimeframe } from '@/app/provider/timeframe-provider';
 
 export const WeightSection = () => {
   const { currentMetrics, goalTargets, user, metricIds, weightHistory } =
     useDataContext();
+  const { timeRange } = useTimeframe();
+
+  console.log('WeightSection timeRange:', timeRange);
 
   const metricDate = getMetricDate(user.data, metricIds.weight);
   const displayDate = metricDate
@@ -30,13 +34,66 @@ export const WeightSection = () => {
       })}`
     : 'No date';
 
-  const { weightToGo, sevenDayTrend, progress, isAboveTarget, isTrendingDown } =
-    useWeightCalculations({
-      currentWeight: currentMetrics.currentWeight,
-      targetWeight: goalTargets.weight.value,
-      weightHistory: weightHistory.data,
-      startDate: goalTargets.weight.startDate,
-    });
+  const {
+    weightToGo,
+    sevenDayTrend,
+    thirtyDayTrend,
+    ninetyDayTrend,
+    progress,
+    isAboveTarget,
+    sevenDayIsTrendingDown,
+    thirtyDayIsTrendingDown,
+    ninetyDayIsTrendingDown,
+  } = useWeightCalculations({
+    currentWeight: currentMetrics.currentWeight,
+    targetWeight: goalTargets.weight.value,
+    weightHistory: weightHistory.data,
+    startDate: goalTargets.weight.startDate,
+  });
+
+  const label = useMemo(() => {
+    switch (timeRange) {
+      case '7d':
+        return '7 Day Trend';
+      case '30d':
+        return '30 Day Trend';
+      case '90d':
+        return '90 Day Trend';
+      default:
+        return '7 Day Trend';
+    }
+  }, [timeRange]);
+
+  const trend = useMemo(() => {
+    switch (timeRange) {
+      case '7d':
+        return sevenDayTrend;
+      case '30d':
+        return thirtyDayTrend;
+      case '90d':
+        return ninetyDayTrend;
+      default:
+        return sevenDayTrend;
+    }
+  }, [timeRange, sevenDayTrend, thirtyDayTrend, ninetyDayTrend]);
+
+  const isTrendingDown = useMemo(() => {
+    switch (timeRange) {
+      case '7d':
+        return sevenDayIsTrendingDown;
+      case '30d':
+        return thirtyDayIsTrendingDown;
+      case '90d':
+        return ninetyDayIsTrendingDown;
+      default:
+        return sevenDayIsTrendingDown;
+    }
+  }, [
+    timeRange,
+    sevenDayIsTrendingDown,
+    thirtyDayIsTrendingDown,
+    ninetyDayIsTrendingDown,
+  ]);
 
   const hasTriggeredConfetti = useRef(false);
 
@@ -80,6 +137,8 @@ export const WeightSection = () => {
   console.log('WeightSection render', {
     weightToGo,
     sevenDayTrend,
+    thirtyDayTrend,
+    ninetyDayTrend,
     progress,
     isAboveTarget,
     isTrendingDown,
@@ -115,8 +174,8 @@ export const WeightSection = () => {
                 )}
               />
               <WeightMetric
-                label="7 Day Trend"
-                value={sevenDayTrend ?? '—'}
+                label={label}
+                value={trend ?? '—'}
                 className={cn(
                   'items-baseline-last',
                   isTrendingDown
@@ -124,7 +183,7 @@ export const WeightSection = () => {
                     : 'text-red-600 trend-warning',
                 )}
                 showTrend
-                trendValue={sevenDayTrend}
+                trendValue={trend}
                 isTrendingDown={isTrendingDown}
               />
             </div>

@@ -1,7 +1,12 @@
 import { useMemo } from 'react';
-import { DAYS_IN_WEEK, getUTCDateDaysAgo, isSameUTCDate } from '@/lib/utils';
+import {
+  DAYS_IN_WEEK,
+  getEntryForTimeRange,
+  getUTCDateDaysAgo,
+  isSameUTCDate,
+} from '@/lib/utils';
 
-interface WeightHistoryEntry {
+export interface WeightHistoryEntry {
   measuredAt: Date;
   value: string;
 }
@@ -16,9 +21,13 @@ interface UseWeightCalculationsProps {
 interface WeightCalculations {
   weightToGo: number;
   sevenDayTrend: number | null;
+  thirtyDayTrend: number | null;
+  ninetyDayTrend: number | null;
   progress: number;
   isAboveTarget: boolean;
-  isTrendingDown: boolean;
+  sevenDayIsTrendingDown: boolean;
+  thirtyDayIsTrendingDown: boolean;
+  ninetyDayIsTrendingDown: boolean;
 }
 
 /**
@@ -35,23 +44,49 @@ export const useWeightCalculations = ({
 
     // Find weight from 7 days ago (using UTC to avoid timezone issues)
     const oneWeekAgoUTC = getUTCDateDaysAgo(DAYS_IN_WEEK);
-    const lastWeekEntry = weightHistory
-      .slice()
-      .sort(
-        (a, b) =>
-          new Date(b.measuredAt).getTime() - new Date(a.measuredAt).getTime(),
-      )
-      .find((entry) => {
-        const entryDate = new Date(entry.measuredAt);
-        return entryDate <= oneWeekAgoUTC;
-      });
+    const thirtyDaysAgoUTC = getUTCDateDaysAgo(30);
+    const ninetyDaysAgoUTC = getUTCDateDaysAgo(90);
+
+    const lastWeekEntry = getEntryForTimeRange(weightHistory, oneWeekAgoUTC);
+
+    const thirtyDayEntry = getEntryForTimeRange(
+      weightHistory,
+      thirtyDaysAgoUTC,
+    );
+    const ninetyDayEntry = getEntryForTimeRange(
+      weightHistory,
+      ninetyDaysAgoUTC,
+    );
+
+    console.log('Weight Calculations Debug:', {
+      current,
+      lastWeekEntry,
+      thirtyDayEntry,
+      ninetyDayEntry,
+    });
 
     const lastWeekWeight = lastWeekEntry ? Number(lastWeekEntry.value) : null;
+    const thirtyDayWeight = thirtyDayEntry
+      ? Number(thirtyDayEntry.value)
+      : null;
+    const ninetyDayWeight = ninetyDayEntry
+      ? Number(ninetyDayEntry.value)
+      : null;
 
     // Calculate 7-day trend
     const sevenDayTrend =
       currentWeight && lastWeekWeight
         ? Number((current - lastWeekWeight).toFixed(2))
+        : null;
+    // Calculate 30-day trend
+    const thirtyDayTrend =
+      currentWeight && thirtyDayWeight
+        ? Number((current - thirtyDayWeight).toFixed(2))
+        : null;
+    // Calculate 90-day trend
+    const ninetyDayTrend =
+      currentWeight && ninetyDayWeight
+        ? Number((current - ninetyDayWeight).toFixed(2))
         : null;
 
     // Find starting weight for progress calculation (weight when goal was set)
@@ -86,9 +121,13 @@ export const useWeightCalculations = ({
     return {
       weightToGo,
       sevenDayTrend,
+      thirtyDayTrend,
+      ninetyDayTrend,
       progress,
       isAboveTarget: weightToGo >= 0,
-      isTrendingDown: sevenDayTrend !== null && sevenDayTrend < 0,
+      sevenDayIsTrendingDown: sevenDayTrend !== null && sevenDayTrend < 0,
+      thirtyDayIsTrendingDown: thirtyDayTrend !== null && thirtyDayTrend < 0,
+      ninetyDayIsTrendingDown: ninetyDayTrend !== null && ninetyDayTrend < 0,
     };
   }, [currentWeight, targetWeight, weightHistory, startDate]);
 };

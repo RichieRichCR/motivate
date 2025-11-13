@@ -1,3 +1,4 @@
+import { WeightHistoryEntry } from '@/components/weight-section-hooks';
 import { ChartDataPoint, MetricData } from '../types';
 
 export const formatDate = (date: string): string => {
@@ -163,4 +164,21 @@ export const getDaysFromTimeRange = (timeRange: string): number => {
     default:
       return DAYS_TO_FETCH;
   }
+};
+
+export const getEntryForTimeRange = (
+  data: WeightHistoryEntry[],
+  timeRange: Date,
+): WeightHistoryEntry | undefined => {
+  console.log('getEntryForTimeRange called with timeRange:', data, timeRange);
+  return data
+    .slice()
+    .sort(
+      (a, b) =>
+        new Date(b.measuredAt).getTime() - new Date(a.measuredAt).getTime(),
+    )
+    .find((entry) => {
+      const entryDate = new Date(entry.measuredAt);
+      return entryDate <= timeRange;
+    });
 };
