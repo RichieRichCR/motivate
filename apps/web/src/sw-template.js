@@ -10,16 +10,11 @@ self.addEventListener('install', (event) => {
   console.log(`[Service Worker] Installing version ${CACHE_VERSION}...`);
 
   event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then((cache) => {
-        return cache.addAll(urlsToCache);
-      })
-      .then(() => {
-        // Skip waiting to activate immediately
-        return self.skipWaiting();
-      }),
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(urlsToCache);
+    }),
   );
+  // Don't skip waiting automatically - wait for user confirmation
 });
 
 self.addEventListener('activate', (event) => {
@@ -40,18 +35,7 @@ self.addEventListener('activate', (event) => {
       }),
       // Take control of all clients immediately
       self.clients.claim(),
-    ]).then(() => {
-      // Notify all clients about the update
-      return self.clients.matchAll().then((clients) => {
-        clients.forEach((client) => {
-          client.postMessage({
-            type: 'SW_UPDATED',
-            version: CACHE_VERSION,
-            buildTimestamp: BUILD_TIMESTAMP,
-          });
-        });
-      });
-    }),
+    ]),
   );
 });
 

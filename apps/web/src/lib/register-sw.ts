@@ -31,16 +31,11 @@ export function registerServiceWorker() {
             }
           });
 
-          // Listen for messages from the service worker
-          navigator.serviceWorker.addEventListener('message', (event) => {
-            if (event.data && event.data.type === 'SW_UPDATED') {
-              console.log(
-                'New service worker version activated:',
-                event.data.version,
-              );
-              // Reload the page to show the new version
-              window.location.reload();
-            }
+          // Listen for controller change (new SW took over)
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            console.log('New service worker activated, reloading...');
+            // Reload the page to show the new version
+            window.location.reload();
           });
 
           // Handle update found
