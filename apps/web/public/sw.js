@@ -1,13 +1,10 @@
 // Service worker template with automatic update checking and version management
 // Version will be injected during build time
 
-const CACHE_VERSION = '27f1c25';
-const BUILD_TIMESTAMP = '1763120554120';
+const CACHE_VERSION = '7626297';
+const BUILD_TIMESTAMP = '1763123329843';
 const CACHE_NAME = `motivate-${CACHE_VERSION}`;
 const urlsToCache = ['/', '/manifest.json'];
-
-// Update check interval (24 hours)
-const UPDATE_CHECK_INTERVAL = 24 * 60 * 60 * 1000;
 
 self.addEventListener('install', (event) => {
   console.log(`[Service Worker] Installing version ${CACHE_VERSION}...`);
