@@ -27,7 +27,7 @@ export const NavBar = () => {
         // When sentinel is not visible, nav is stuck
         nav.classList.toggle('stuck', !entry.isIntersecting);
       },
-      { threshold: [0], rootMargin: '0px 0px -1px 0px' },
+      { threshold: [0], rootMargin: '0px 0px 0px 0px' },
     );
 
     observer.observe(sentinel);
