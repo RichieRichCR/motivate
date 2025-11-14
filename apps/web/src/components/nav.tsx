@@ -49,7 +49,7 @@ export const NavBar = () => {
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-sm tracking-widest uppercase font-black"
+          className="text-xs lg:text-sm tracking-widest uppercase font-black"
         >
           Motivate Me
         </motion.h1>
