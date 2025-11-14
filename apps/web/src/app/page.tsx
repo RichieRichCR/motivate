@@ -3,8 +3,7 @@ import { ErrorBoundary } from '../components/error-boundary';
 import { Suspense } from 'react';
 import { SkeletonDashboard } from '@/components/skeleton-dashboard';
 
-// Revalidate every 24 hours
-export const revalidate = 86400; // 60 * 60 * 24 seconds
+export const revalidate = 60 * 5; // Revalidate every 5 minutes
 
 export default async function Home() {
   return (
