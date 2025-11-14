@@ -8,6 +8,7 @@ import Aurora from '../components/aurora';
 import { TimeframeProvider } from './provider/timeframe-provider';
 import { PreferencesProvider } from './provider/preferences-provider';
 import { ServiceWorkerRegistration } from '../components/service-worker-registration';
+import { QueryProvider } from './provider/query-provider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -72,23 +73,25 @@ export default function RootLayout({
           Skip to main content
         </a>
 
-        <PreferencesProvider>
-          <TimeframeProvider defaultTimeRange="7d">
-            <ServiceWorkerRegistration />
-            <Aurora
-              colorStops={['#3A29FF', '#Fd12B3', '#0ff9aa']}
-              blend={0.75}
-              amplitude={0.5}
-              speed={0.25}
-            />
+        <QueryProvider>
+          <PreferencesProvider>
+            <TimeframeProvider defaultTimeRange="7d">
+              <ServiceWorkerRegistration />
+              <Aurora
+                colorStops={['#3A29FF', '#Fd12B3', '#0ff9aa']}
+                blend={0.75}
+                amplitude={0.5}
+                speed={0.25}
+              />
 
-            {/* <AnimatedGradientBackground /> */}
-            <main className="relative z-10 p-4 container h-full w-full">
-              <NavBar />
-              {children}
-            </main>
-          </TimeframeProvider>
-        </PreferencesProvider>
+              {/* <AnimatedGradientBackground /> */}
+              <main className="relative z-10 p-4 container h-full w-full">
+                <NavBar />
+                {children}
+              </main>
+            </TimeframeProvider>
+          </PreferencesProvider>
+        </QueryProvider>
       </body>
     </html>
   );

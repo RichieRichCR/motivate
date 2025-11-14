@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@repo/ui';
+import { RefreshButton } from './refresh-button';
 
 export const NavBar = () => {
   const navRef = useRef<HTMLElement>(null);
@@ -42,7 +43,7 @@ export const NavBar = () => {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="sticky top-0 w-full h-16 bg-card/30 backdrop-blur-2xl text-card-foreground gap-6 border border-foreground/20 py-6 shadow-2xl flex items-center justify-between px-4 z-20 rounded-2xl transition-all duration-200 transform-3d"
+        className="sticky top-0 w-full h-16 bg-card/30 backdrop-blur-2xl text-card-foreground gap-6 border border-foreground/20 p-4 shadow-2xl flex items-center justify-between z-20 rounded-2xl transition-all duration-200 transform-3d"
       >
         <motion.h1
           initial={{ x: -20, opacity: 0 }}
@@ -62,6 +63,7 @@ export const NavBar = () => {
               <SelectTrigger
                 className="w-40 rounded-lg"
                 aria-label="Select time range for dashboard metrics"
+                suppressHydrationWarning
               >
                 <SelectValue placeholder={timeRangeOptions[0]?.label} />
               </SelectTrigger>
@@ -77,6 +79,13 @@ export const NavBar = () => {
                 ))}
               </SelectContent>
             </Select>
+          </motion.div>
+          <motion.div
+            initial={{ x: 20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            <RefreshButton />
           </motion.div>
         </div>
       </motion.nav>

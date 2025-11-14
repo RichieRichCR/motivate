@@ -1,5 +1,6 @@
-import { api } from '../../lib/api-client';
-import { env } from '../../env';
+'use client';
+
+import { useQuery } from '@tanstack/react-query';
 import {
   createMetricIdMap,
   getDateRange,
@@ -19,32 +20,68 @@ import { DataProvider } from '@/app/provider/data-provider';
 import { WeightSection } from '../weight-section';
 import { RadialChartsSection } from '../radial-charts-section';
 import { LinearChartSection } from '../linear-chart-section';
+import {
+  getUserQueryOptions,
+  getGoalsQueryOptions,
+  getMetricsQueryOptions,
+  getAllMeasurementQueryOptions,
+} from '@/lib/api-queries';
 
-export const Dashboard = async () => {
-  const userId = env.USER_ID;
+interface DashboardProps {
+  userId: string;
+}
+
+export const Dashboard = ({ userId }: DashboardProps) => {
   const { startDate, endDate } = getDateRange(DATA_FETCH_WINDOW_DAYS);
 
-  // Fetch user data, goals, and available metrics
-  const [user, goals, metrics] = await Promise.all([
-    api.user.get(userId),
-    api.user.goals.get(userId),
-    api.metrics.get(),
-  ]);
+  // Fetch user data, goals, and available metrics using React Query
+  const { data: user } = useQuery(getUserQueryOptions(userId));
+  const { data: goals } = useQuery(getGoalsQueryOptions(userId));
+  const { data: metrics } = useQuery(getMetricsQueryOptions());
 
-  const metricIdMap = createMetricIdMap(metrics.data);
-  const metricIds = resolveAllMetricIds(metricIdMap);
+  // Calculate metric IDs (safe even if metrics not loaded - will create placeholder queries)
+  const metricIdMap = metrics ? createMetricIdMap(metrics.data) : {};
+  const metricIds = metrics
+    ? resolveAllMetricIds(metricIdMap)
+    : {
+        weight: 1, // Use placeholder IDs that won't match real data
+        steps: 1,
+        exercise: 1,
+        standing: 1,
+        distance: 1,
+        water: 1,
+        energy: 1,
+      };
 
-  // Fetch all measurement histories in parallel
-  const measurementHistories = await Promise.all(
-    METRIC_TYPES.map((type) =>
-      api.user.measurements.getById({
-        userId,
-        measurementId: metricIds[type],
-        startDate,
-        endDate,
-      }),
-    ),
+  // Get all measurement query options
+  const measurementQueries = getAllMeasurementQueryOptions(
+    userId,
+    metricIds,
+    startDate,
+    endDate,
   );
+
+  // Fetch all measurements using useQuery hooks
+  // Disable queries until metrics are loaded to avoid fetching with invalid IDs
+  const measurementResults = [
+    useQuery({ ...measurementQueries[0], enabled: !!metrics }), // steps
+    useQuery({ ...measurementQueries[1], enabled: !!metrics }), // weight
+    useQuery({ ...measurementQueries[2], enabled: !!metrics }), // energy
+    useQuery({ ...measurementQueries[3], enabled: !!metrics }), // exercise
+    useQuery({ ...measurementQueries[4], enabled: !!metrics }), // distance
+    useQuery({ ...measurementQueries[5], enabled: !!metrics }), // water
+  ];
+
+  // Early return if data is not yet available (after all hooks are called)
+  if (
+    !user ||
+    !goals ||
+    !metrics ||
+    measurementResults.some((result) => !result.data)
+  ) {
+    return null;
+  }
+  const measurementHistories = measurementResults.map((result) => result.data!);
 
   // Transform measurement data directly, avoiding intermediate maps
   const transformedData = Object.fromEntries(
@@ -80,10 +117,7 @@ export const Dashboard = async () => {
   return (
     <DataProvider data={data}>
       <div className="w-full flex flex-col gap-8">
-        <div className="flex items-center justify-between w-full">
-          <TitleSection className="mb-0">Weight Summary</TitleSection>
-          {/* <ExportData /> */}
-        </div>
+        <TitleSection className="mb-0">Weight Summary</TitleSection>
 
         <WeightSection />
 
