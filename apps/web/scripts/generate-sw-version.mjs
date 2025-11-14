@@ -46,6 +46,16 @@ function generateServiceWorker() {
   const templatePath = path.join(__dirname, '..', 'src', 'sw-template.js');
   const outputPath = path.join(__dirname, '..', 'public', 'sw.js');
 
+  // Check if we need to regenerate (compare with existing version)
+  if (fs.existsSync(outputPath)) {
+    const existingContent = fs.readFileSync(outputPath, 'utf8');
+    const versionMatch = existingContent.match(/const CACHE_VERSION = '(.+?)'/);
+    if (versionMatch && versionMatch[1] === version) {
+      console.log(`✅ Service worker already at version: ${version}`);
+      return;
+    }
+  }
+
   let template = fs.readFileSync(templatePath, 'utf8');
 
   // Replace placeholders
