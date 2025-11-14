@@ -90,9 +90,9 @@ function RollingDigit({
     ? 'w-4 2xl:w-5 bg-transparent'
     : isNegative
       ? 'w-6 2xl:w-10'
-      : isOne
-        ? 'w-8 2xl:w-14'
-        : 'w-10 2xl:w-16';
+      : // : isOne
+        //   ? 'w-8 2xl:w-14'
+        'w-10 2xl:w-16';
 
   return (
     <span
