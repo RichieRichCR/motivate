@@ -85,14 +85,20 @@ function RollingDigit({
         ? 'number-down'
         : '';
 
+  // Determine width classes based on digit type
+  const widthClasses = isDecimal
+    ? 'w-4 2xl:w-5 bg-transparent'
+    : isNegative
+      ? 'w-6 2xl:w-10'
+      : isOne
+        ? 'w-8 2xl:w-14'
+        : 'w-10 2xl:w-16';
+
   return (
     <span
       className={cn(
-        `inline-block relative overflow-hidden align-baseline h-12 2xl:h-20`,
-        { 'w-4 2xl:w-5 bg-transparent': isDecimal },
-        { 'w-6 2xl:w-10 ': isNegative },
-        { 'w-10 2xl:w-16': !isDecimal && !isNegative && !isOne },
-        { 'w-8 2xl:w-14': isOne },
+        'inline-block relative overflow-hidden align-baseline h-12 2xl:h-20',
+        widthClasses,
       )}
     >
       <AnimatePresence mode="popLayout">
