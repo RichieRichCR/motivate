@@ -51,8 +51,7 @@ function RollingDigit({
         const progress = step / total;
         // Ease out quadratic
         const easeProgress = 1 - (1 - progress) * (1 - progress);
-        const range =
-          DIGIT_ANIMATION_MAX_STEP_MS - DIGIT_ANIMATION_MIN_STEP_MS;
+        const range = DIGIT_ANIMATION_MAX_STEP_MS - DIGIT_ANIMATION_MIN_STEP_MS;
         return DIGIT_ANIMATION_MIN_STEP_MS + easeProgress * range;
       };
 
@@ -90,7 +89,7 @@ function RollingDigit({
     <span
       className={cn(
         `inline-block relative overflow-hidden align-baseline h-12 2xl:h-20`,
-        { 'w-3 2xl:w-5 bg-transparent': isDecimal },
+        { 'w-4 2xl:w-5 bg-transparent': isDecimal },
         { 'w-6 2xl:w-10 ': isNegative },
         { 'w-10 2xl:w-16': !isDecimal && !isNegative && !isOne },
         { 'w-8 2xl:w-14': isOne },
