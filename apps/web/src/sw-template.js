@@ -1,8 +1,8 @@
 // Service worker template with automatic update checking and version management
 // Version will be injected during build time
 
-const CACHE_VERSION = '27f1c25';
-const BUILD_TIMESTAMP = '1763120554120';
+const CACHE_VERSION = '__SW_VERSION__';
+const BUILD_TIMESTAMP = '__BUILD_TIMESTAMP__';
 const CACHE_NAME = `motivate-${CACHE_VERSION}`;
 const urlsToCache = ['/', '/manifest.json'];
 
