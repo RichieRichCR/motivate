@@ -87,20 +87,6 @@ export const extractCurrentMetrics = (
   // If weight is 0, "0", or any variation (automation push issue), use the most recent non-zero weight from history
   const isZeroWeight = currentWeight && Number(currentWeight) === 0;
 
-  // Debug logging (temporary)
-  if (typeof window !== 'undefined' && metricIds.weight) {
-    console.log('[Weight Fallback Debug]', {
-      currentWeight,
-      isZeroWeight,
-      hasWeightHistory: !!weightHistory,
-      weightHistoryLength: weightHistory?.length || 0,
-      weightHistorySample: weightHistory?.slice(0, 3).map((item) => ({
-        value: item.value,
-        measuredAt: item.measuredAt,
-      })),
-    });
-  }
-
   if (isZeroWeight && weightHistory && weightHistory.length > 0) {
     // Sort by date descending and find first non-zero weight
     const sortedHistory = [...weightHistory]
@@ -117,14 +103,6 @@ export const extractCurrentMetrics = (
     if (sortedHistory.length > 0) {
       currentWeight = sortedHistory[0].value;
       extractDate = sortedHistory[0].measuredAt?.toString();
-
-      // Debug logging (temporary)
-      if (typeof window !== 'undefined') {
-        console.log('[Weight Fallback Applied]', {
-          fallbackWeight: currentWeight,
-          fallbackDate: extractDate,
-        });
-      }
     }
   }
 

@@ -32,13 +32,16 @@ export function TimeframeProvider({
   children: React.ReactNode;
   defaultTimeRange?: string;
 }) {
-  // Initialize from localStorage if available
-  const [timeRange, setTimeRangeState] = React.useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('timeRange') || defaultTimeRange;
+  // Always initialize with defaultTimeRange on both server and first client render
+  const [timeRange, setTimeRangeState] = React.useState(defaultTimeRange);
+
+  // Load from localStorage after hydration to avoid mismatch
+  React.useEffect(() => {
+    const stored = localStorage.getItem('timeRange');
+    if (stored) {
+      setTimeRangeState(stored);
     }
-    return defaultTimeRange;
-  });
+  }, []); // Only run once on mount
 
   // Persist to localStorage when changed
   const setTimeRange = React.useCallback((value: string) => {

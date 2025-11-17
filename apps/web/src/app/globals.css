@@ -116,15 +116,15 @@ nav.stuck {
   }
 }
 
-.trend-warning {
+/* .trend-warning {
   -webkit-animation: pulse-red 2s ease-in-out infinite;
   animation: pulse-red 2s ease-in-out infinite;
-}
+} */
 
-.trend-positive {
+/* .trend-positive {
   -webkit-animation: pulse-green 2s ease-in-out infinite;
   animation: pulse-green 2s ease-in-out infinite;
-}
+} */
 
 /* Glow Effects */
 @-webkit-keyframes glow {

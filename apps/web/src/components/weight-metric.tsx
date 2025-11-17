@@ -42,7 +42,7 @@ export const WeightMetric = ({
         {showTrend && trendValue !== null && (
           <div className="flex flex-col gap-1 items-center justify-center ml-2">
             {isTrendingDown ? (
-              <TrendingDown className="text-green-600" />
+              <TrendingDown className="text-primary" />
             ) : (
               <TrendingUp className="text-red-600" />
             )}

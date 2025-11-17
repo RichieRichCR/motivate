@@ -162,9 +162,7 @@ export const WeightSection = () => {
               <WeightMetric
                 label="To Go"
                 value={weightToGo}
-                className={cn(
-                  isAboveTarget ? 'text-red-600' : 'text-green-600',
-                )}
+                className={cn(isAboveTarget ? 'text-red-600' : 'text-primary')}
               />
               <WeightMetric
                 label={label}
@@ -172,7 +170,7 @@ export const WeightSection = () => {
                 className={cn(
                   'items-baseline-last',
                   isTrendingDown
-                    ? 'text-green-600 trend-positive'
+                    ? 'text-primary trend-positive'
                     : 'text-red-600 trend-warning',
                 )}
                 showTrend

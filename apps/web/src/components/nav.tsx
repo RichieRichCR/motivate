@@ -50,7 +50,6 @@ export const NavBar = () => {
               <SelectTrigger
                 className="w-40 rounded-lg"
                 aria-label="Select time range for dashboard metrics"
-                suppressHydrationWarning
               >
                 <SelectValue placeholder={timeRangeOptions[0]?.label} />
               </SelectTrigger>
