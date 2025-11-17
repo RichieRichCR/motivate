@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import {
   createMetricIdMap,
   getDateRange,
@@ -34,10 +34,10 @@ interface DashboardProps {
 export const Dashboard = ({ userId }: DashboardProps) => {
   const { startDate, endDate } = getDateRange(DATA_FETCH_WINDOW_DAYS);
 
-  // Fetch user data, goals, and available metrics using React Query
-  const { data: user } = useQuery(getUserQueryOptions(userId));
-  const { data: goals } = useQuery(getGoalsQueryOptions(userId));
-  const { data: metrics } = useQuery(getMetricsQueryOptions());
+  // Fetch user data, goals, and available metrics using React Query with Suspense
+  const { data: user } = useSuspenseQuery(getUserQueryOptions(userId));
+  const { data: goals } = useSuspenseQuery(getGoalsQueryOptions(userId));
+  const { data: metrics } = useSuspenseQuery(getMetricsQueryOptions());
 
   // Calculate metric IDs (safe even if metrics not loaded - will create placeholder queries)
   const metricIdMap = metrics ? createMetricIdMap(metrics.data) : {};
@@ -61,27 +61,17 @@ export const Dashboard = ({ userId }: DashboardProps) => {
     endDate,
   );
 
-  // Fetch all measurements using useQuery hooks
-  // Disable queries until metrics are loaded to avoid fetching with invalid IDs
+  // Fetch all measurements using useSuspenseQuery hooks
   const measurementResults = [
-    useQuery({ ...measurementQueries[0], enabled: !!metrics }), // steps
-    useQuery({ ...measurementQueries[1], enabled: !!metrics }), // weight
-    useQuery({ ...measurementQueries[2], enabled: !!metrics }), // energy
-    useQuery({ ...measurementQueries[3], enabled: !!metrics }), // exercise
-    useQuery({ ...measurementQueries[4], enabled: !!metrics }), // distance
-    useQuery({ ...measurementQueries[5], enabled: !!metrics }), // water
+    useSuspenseQuery(measurementQueries[0]), // steps
+    useSuspenseQuery(measurementQueries[1]), // weight
+    useSuspenseQuery(measurementQueries[2]), // energy
+    useSuspenseQuery(measurementQueries[3]), // exercise
+    useSuspenseQuery(measurementQueries[4]), // distance
+    useSuspenseQuery(measurementQueries[5]), // water
   ];
 
-  // Early return if data is not yet available (after all hooks are called)
-  if (
-    !user ||
-    !goals ||
-    !metrics ||
-    measurementResults.some((result) => !result.data)
-  ) {
-    return null;
-  }
-  const measurementHistories = measurementResults.map((result) => result.data!);
+  const measurementHistories = measurementResults.map((result) => result.data);
 
   // Transform measurement data directly, avoiding intermediate maps
   const transformedData = Object.fromEntries(
@@ -91,7 +81,11 @@ export const Dashboard = ({ userId }: DashboardProps) => {
     ]),
   ) as Record<MetricType, ReturnType<typeof transformMeasurementData>>;
 
-  const currentMetrics = extractCurrentMetrics(user.data, metricIds);
+  const currentMetrics = extractCurrentMetrics(
+    user.data,
+    metricIds,
+    measurementHistories[1].data, // Pass weight history for fallback
+  );
   const goalTargets = extractGoalTargets(goals.data, metricIds);
   const radialCharts = buildAllRadialChartConfigs(currentMetrics, goalTargets);
 

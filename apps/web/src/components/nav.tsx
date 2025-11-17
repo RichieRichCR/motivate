@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { motion } from 'motion/react';
 import { useTimeframe } from '@/app/provider/timeframe-provider';
 import {
   Select,
@@ -38,27 +37,15 @@ export const NavBar = () => {
     <>
       {/* Sentinel element to detect when nav becomes sticky */}
       <div ref={sentinelRef} className="h-0" />
-      <motion.nav
+      <nav
         ref={navRef}
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="sticky top-0 w-full h-16 bg-card/30 backdrop-blur-2xl text-card-foreground gap-6 border border-foreground/20 p-4 shadow-2xl flex items-center justify-between z-20 rounded-2xl transition-all duration-200 transform-3d"
+        className="sticky top-0 w-full h-16 bg-card/30 backdrop-blur-2xl text-card-foreground gap-6 border border-foreground/20 p-4 shadow-2xl flex items-center justify-between z-20 rounded-2xl transition-all duration-200 transform-3d "
       >
-        <motion.h1
-          initial={{ x: -20, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-xs lg:text-sm tracking-widest uppercase font-black"
-        >
+        <h1 className="text-xs lg:text-sm tracking-widest uppercase font-black">
           Motivate Me
-        </motion.h1>
+        </h1>
         <div className="flex items-center gap-2">
-          <motion.div
-            initial={{ x: 20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
+          <div>
             <Select value={timeRange} onValueChange={setTimeRange}>
               <SelectTrigger
                 className="w-40 rounded-lg"
@@ -79,16 +66,12 @@ export const NavBar = () => {
                 ))}
               </SelectContent>
             </Select>
-          </motion.div>
-          <motion.div
-            initial={{ x: 20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-          >
+          </div>
+          <div>
             <RefreshButton />
-          </motion.div>
+          </div>
         </div>
-      </motion.nav>
+      </nav>
     </>
   );
 };

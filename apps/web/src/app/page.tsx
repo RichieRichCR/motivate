@@ -23,7 +23,7 @@ export default async function Home() {
     <HydrationBoundary state={dehydrate(queryClient)}>
       <div
         id="main-content"
-        className="container flex flex-col items-start justify-center gap-8 mb-16 w-full"
+        className="flex flex-col items-start justify-start gap-8 mb-16 w-full min-h-screen"
       >
         <ErrorBoundary>
           <Suspense fallback={<SkeletonDashboard />}>

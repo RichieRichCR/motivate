@@ -98,6 +98,94 @@ describe('dashboard-helpers', () => {
       expect(result.currentWeight).toBeUndefined();
       expect(result.currentSteps).toBeUndefined();
     });
+
+    it('should use previous non-zero weight when current weight is 0', () => {
+      const userDataWithZeroWeight: UserDataItem[] = [
+        { metricTypeId: 1, value: '0', measuredAt: new Date('2024-01-15') },
+        { metricTypeId: 2, value: '10000', measuredAt: new Date('2024-01-15') },
+      ];
+
+      const weightHistory: UserDataItem[] = [
+        { metricTypeId: 1, value: '0', measuredAt: new Date('2024-01-15') },
+        { metricTypeId: 1, value: '150', measuredAt: new Date('2024-01-14') },
+        { metricTypeId: 1, value: '151', measuredAt: new Date('2024-01-13') },
+      ];
+
+      const result = extractCurrentMetrics(
+        userDataWithZeroWeight,
+        mockMetricIds,
+        weightHistory,
+      );
+
+      expect(result.currentWeight).toBe('150');
+      expect(result.currentSteps).toBe('10000');
+    });
+
+    it('should keep zero weight if no non-zero history exists', () => {
+      const userDataWithZeroWeight: UserDataItem[] = [
+        { metricTypeId: 1, value: '0', measuredAt: new Date('2024-01-15') },
+      ];
+
+      const weightHistory: UserDataItem[] = [
+        { metricTypeId: 1, value: '0', measuredAt: new Date('2024-01-15') },
+        { metricTypeId: 1, value: '0', measuredAt: new Date('2024-01-14') },
+      ];
+
+      const result = extractCurrentMetrics(
+        userDataWithZeroWeight,
+        mockMetricIds,
+        weightHistory,
+      );
+
+      expect(result.currentWeight).toBe('0');
+    });
+
+    it('should use current weight when it is non-zero', () => {
+      const userDataWithValidWeight: UserDataItem[] = [
+        { metricTypeId: 1, value: '152', measuredAt: new Date('2024-01-15') },
+      ];
+
+      const weightHistory: UserDataItem[] = [
+        { metricTypeId: 1, value: '152', measuredAt: new Date('2024-01-15') },
+        { metricTypeId: 1, value: '150', measuredAt: new Date('2024-01-14') },
+      ];
+
+      const result = extractCurrentMetrics(
+        userDataWithValidWeight,
+        mockMetricIds,
+        weightHistory,
+      );
+
+      expect(result.currentWeight).toBe('152');
+    });
+
+    it('should handle weight as "0.00" decimal format', () => {
+      const userDataWithZeroWeight: UserDataItem[] = [
+        { metricTypeId: 1, value: '0.00', measuredAt: new Date('2024-01-15') },
+      ];
+
+      const weightHistory: UserDataItem[] = [
+        { metricTypeId: 1, value: '0.00', measuredAt: new Date('2024-01-15') },
+        {
+          metricTypeId: 1,
+          value: '148.50',
+          measuredAt: new Date('2024-01-14'),
+        },
+        {
+          metricTypeId: 1,
+          value: '149.00',
+          measuredAt: new Date('2024-01-13'),
+        },
+      ];
+
+      const result = extractCurrentMetrics(
+        userDataWithZeroWeight,
+        mockMetricIds,
+        weightHistory,
+      );
+
+      expect(result.currentWeight).toBe('148.50');
+    });
   });
 
   describe('extractGoalTargets', () => {

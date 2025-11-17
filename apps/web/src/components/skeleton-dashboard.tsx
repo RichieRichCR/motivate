@@ -2,14 +2,10 @@ import { Card, CardContent, CardHeader, Skeleton } from '@repo/ui';
 
 export const SkeletonDashboard = () => {
   return (
-    <div className="w-full flex flex-col gap-8">
+    <div className="w-full flex flex-col gap-8 mt-8">
       {/* Export and Title Row Skeleton */}
       <div className="flex items-center justify-between w-full">
         <Skeleton className="h-8 w-48" />
-        <div className="flex gap-2">
-          <Skeleton className="h-9 w-32" />
-          <Skeleton className="h-9 w-32" />
-        </div>
       </div>
 
       {/* Weight Section Skeleton */}

@@ -65,11 +65,11 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background min-h-screen flex items-center justify-center`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background min-h-screen flex items-start justify-center`}
       >
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:m-2"
+          className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-background focus:text-primary-foreground focus:rounded-md focus:m-2"
         >
           Skip to main content
         </a>

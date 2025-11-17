@@ -61,24 +61,75 @@ export const resolveAllMetricIds = (
  * Extracts current metric values from user data
  * Uses Map for O(1) lookup complexity instead of O(n) with array.find()
  *
+ * Special handling for weight: If current weight is 0, falls back to the most recent non-zero weight
+ * from the weight history to handle automation data push issues.
+ *
  * @performance For n=6 metrics: O(m + 6) vs O(6m) where m is userData length
  */
 export const extractCurrentMetrics = (
   userData: UserDataItem[],
   metricIds: MetricIds,
+  weightHistory?: UserDataItem[],
 ): DashboardMetrics => {
   // Create a Map for O(1) lookup instead of repeated array.find() calls
   const dataMap = new Map(
     userData.map((item) => [item.metricTypeId, item.value]),
   );
-  const extractDate = dataMap.get(metricIds.weight)
+
+  // Get current weight value
+  let currentWeight = dataMap.get(metricIds.weight);
+  let extractDate = dataMap.get(metricIds.weight)
     ? userData
         .find((item) => item.metricTypeId === metricIds.weight)
         ?.measuredAt?.toString()
     : undefined;
 
+  // If weight is 0, "0", or any variation (automation push issue), use the most recent non-zero weight from history
+  const isZeroWeight = currentWeight && Number(currentWeight) === 0;
+
+  // Debug logging (temporary)
+  if (typeof window !== 'undefined' && metricIds.weight) {
+    console.log('[Weight Fallback Debug]', {
+      currentWeight,
+      isZeroWeight,
+      hasWeightHistory: !!weightHistory,
+      weightHistoryLength: weightHistory?.length || 0,
+      weightHistorySample: weightHistory?.slice(0, 3).map((item) => ({
+        value: item.value,
+        measuredAt: item.measuredAt,
+      })),
+    });
+  }
+
+  if (isZeroWeight && weightHistory && weightHistory.length > 0) {
+    // Sort by date descending and find first non-zero weight
+    const sortedHistory = [...weightHistory]
+      .filter((item) => {
+        const numValue = Number(item.value);
+        return !isNaN(numValue) && numValue > 0;
+      })
+      .sort((a, b) => {
+        const dateA = a.measuredAt ? new Date(a.measuredAt).getTime() : 0;
+        const dateB = b.measuredAt ? new Date(b.measuredAt).getTime() : 0;
+        return dateB - dateA;
+      });
+
+    if (sortedHistory.length > 0) {
+      currentWeight = sortedHistory[0].value;
+      extractDate = sortedHistory[0].measuredAt?.toString();
+
+      // Debug logging (temporary)
+      if (typeof window !== 'undefined') {
+        console.log('[Weight Fallback Applied]', {
+          fallbackWeight: currentWeight,
+          fallbackDate: extractDate,
+        });
+      }
+    }
+  }
+
   return {
-    currentWeight: dataMap.get(metricIds.weight),
+    currentWeight,
     currentDistance: dataMap.get(metricIds.distance),
     currentWater: dataMap.get(metricIds.water),
     currentSteps: dataMap.get(metricIds.steps),
