@@ -40,10 +40,55 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // For navigation requests (HTML pages), use network-first strategy
+  if (request.mode === 'navigate' || request.destination === 'document') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          // Cache the new response
+          if (response.ok) {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, responseToCache);
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          // If network fails, try cache as fallback
+          return caches.match(request).then((response) => {
+            return (
+              response ||
+              new Response('Offline - Content not available', {
+                status: 503,
+                statusText: 'Service Unavailable',
+              })
+            );
+          });
+        }),
+    );
+    return;
+  }
+
+  // For static assets, use cache-first strategy
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      // Return cached version or fetch from network
-      return response || fetch(event.request);
+    caches.match(request).then((response) => {
+      if (response) {
+        return response;
+      }
+      return fetch(request).then((response) => {
+        // Cache valid responses
+        if (response.ok && url.origin === self.location.origin) {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, responseToCache);
+          });
+        }
+        return response;
+      });
     }),
   );
 });
