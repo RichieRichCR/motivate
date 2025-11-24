@@ -1,6 +1,7 @@
 'use client';
 
 import { useSuspenseQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import {
   createMetricIdMap,
   getDateRange,
@@ -26,18 +27,23 @@ import {
   getMetricsQueryOptions,
   getAllMeasurementQueryOptions,
 } from '@/lib/api-queries';
+import { Timestamp } from '../timestamp';
 
 interface DashboardProps {
   userId: string;
+  timestamp: string;
 }
 
-export const Dashboard = ({ userId }: DashboardProps) => {
+export const Dashboard = ({ userId, timestamp }: DashboardProps) => {
   const { startDate, endDate } = getDateRange(DATA_FETCH_WINDOW_DAYS);
 
   // Fetch user data, goals, and available metrics using React Query with Suspense
   const { data: user } = useSuspenseQuery(getUserQueryOptions(userId));
   const { data: goals } = useSuspenseQuery(getGoalsQueryOptions(userId));
   const { data: metrics } = useSuspenseQuery(getMetricsQueryOptions());
+
+  // Capture client component render time
+  const [clientRenderedAt] = useState(() => new Date().toUTCString());
 
   // Calculate metric IDs (safe even if metrics not loaded - will create placeholder queries)
   const metricIdMap = metrics ? createMetricIdMap(metrics.data) : {};
@@ -111,6 +117,8 @@ export const Dashboard = ({ userId }: DashboardProps) => {
   return (
     <DataProvider data={data}>
       <div className="w-full flex flex-col gap-8">
+        {/* UTC Timestamps for data freshness monitoring */}
+
         <TitleSection className="mb-0">Weight Summary</TitleSection>
 
         <WeightSection />
@@ -122,6 +130,17 @@ export const Dashboard = ({ userId }: DashboardProps) => {
         <TitleSection>Long Term Activity</TitleSection>
 
         <LinearChartSection />
+
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-6 text-xs text-muted-foreground bg-muted/30 p-3 rounded-lg border border-border/40 justify-between">
+          <div className="flex items-center gap-2">
+            <span className="font-medium">Data Fetched:</span>
+            <Timestamp date={timestamp}></Timestamp>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="font-medium">Client Rendered:</span>
+            <Timestamp date={clientRenderedAt}></Timestamp>
+          </div>
+        </div>
       </div>
     </DataProvider>
   );

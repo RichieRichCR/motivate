@@ -12,6 +12,8 @@ import { env } from '@/env';
 
 export const revalidate = 300; // Revalidate every 5 minutes
 
+const timestamp = new Date().toUTCString();
+
 export default async function Home() {
   // Create a new QueryClient for this request
   const queryClient = new QueryClient();
@@ -27,7 +29,7 @@ export default async function Home() {
       >
         <ErrorBoundary>
           <Suspense fallback={<SkeletonDashboard />}>
-            <Dashboard userId={env.USER_ID} />
+            <Dashboard userId={env.USER_ID} timestamp={timestamp} />
           </Suspense>
         </ErrorBoundary>
       </div>
