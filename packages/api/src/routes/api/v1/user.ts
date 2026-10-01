@@ -428,7 +428,7 @@ app
                   .openapi({ description: 'Measurement Value' }),
                 measuredAt: z
                   .string()
-                  .datetime()
+                  .datetime({ offset: true })
                   .transform((str) => new Date(str))
                   .openapi({ description: 'Measurement Timestamp' }),
                 source: z
